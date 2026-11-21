@@ -1,0 +1,266 @@
+<resources>
+    <string name="app_name">社交切图</string>
+
+    <!-- ============ 通用动作 / 无障碍描述 ============ -->
+    <string name="cd_back">返回</string>
+    <string name="cd_about">关于与捐助</string>
+    <string name="cd_language">语言</string>
+    <string name="cd_increase">加</string>
+    <string name="cd_decrease">减</string>
+    <string name="cd_preview">边框效果预览</string>
+    <string name="action_generate">生成</string>
+    <string name="action_done">完成</string>
+    <string name="action_reset">恢复默认</string>
+    <string name="action_save_gallery">保存到相册</string>
+    <string name="action_share">分享</string>
+    <string name="action_recenter">取景框居中复位</string>
+    <string name="share_chooser_title">分享到</string>
+    <string name="toast_decode_failed">图片解码失败，请换一张</string>
+    <string name="toast_saved">已保存 %1$d 张到相册</string>
+
+    <!-- ============ 首页 ============ -->
+    <string name="home_headline">一张图，适配全平台</string>
+    <string name="home_desc">上传任意图片，自动裁剪或切格为小红书 / 抖音 / 公众号 / Instagram / X / 微博 等合适尺寸。</string>
+    <string name="home_pick">选择图片</string>
+    <string name="home_features">支持：按比例裁剪 · 长图切格(九宫格) · 系统一键分享</string>
+
+    <!-- ============ 编辑页 ============ -->
+    <string name="editor_title">编辑</string>
+    <string name="editor_no_image">未选择图片</string>
+    <string name="mode_crop">按比例裁剪</string>
+    <string name="mode_slice">长图切格</string>
+    <string name="label_platform">平台</string>
+    <string name="orientation_portrait">竖屏</string>
+    <string name="orientation_landscape">横屏</string>
+    <string name="label_ratio">比例：%1$s (%2$s)</string>
+    <string name="label_frame">边框</string>
+    <string name="label_current">当前：%1$s</string>
+    <string name="frame_preview_hint">预览即最终效果：完整画面置于 %1$s 画布，四周由背景填充，不再出现黑边/白边。</string>
+    <string name="frame_preview_hint_original">预览即最终效果：画布保持原图宽高比，四周由背景填充，完整不裁切。</string>
+    <string name="crop_hint">拖动高亮框自由选择保留区域（框内清晰显示），框外模糊部分会被裁掉；输出尺寸 %1$s。</string>
+    <string name="crop_hint_original">当前为原图比例（%1$s），不会裁切任何画面；按原比例等比输出完整图片。</string>
+    <string name="slice_columns">切格列数</string>
+    <string name="slice_rows">切格行数</string>
+    <string name="slice_hint_plain">将切为 %1$d 列 × %2$d 行 = %3$d 张 %4$d×%5$d px 图（按原图像素等分，1:1 无重采样、不加边框；按顺序发布可无缝拼回）</string>
+    <string name="slice_hint_many">一次生成 %1$d 张可能占用较多内存，设备卡顿请减少行数。</string>
+    <string name="frame_summary">%1$s · 留白 %2$d%% · 圆角 %3$d%% · %4$s</string>
+    <string name="frame_summary_cinema">%1$s · %2$s · 遮罩 %3$d%% · %4$s</string>
+
+    <!-- ============ 平台 / 比例名称 ============ -->
+    <string name="platform_xhs">小红书</string>
+    <string name="platform_douyin">抖音</string>
+    <string name="platform_wechat">公众号</string>
+    <string name="platform_instagram">Instagram</string>
+    <string name="platform_weibo">微博</string>
+    <string name="platform_generic">通用</string>
+    <string name="ratio_portrait">竖图</string>
+    <string name="ratio_square">方图</string>
+    <string name="ratio_fullscreen">全屏</string>
+    <string name="ratio_cover">封面</string>
+    <string name="ratio_lead">首图</string>
+    <string name="ratio_original">原比例</string>
+
+    <!-- ============ 边框样式 / 预设 ============ -->
+    <string name="style_blur">背景模糊</string>
+    <string name="style_gradient">取色渐变</string>
+    <string name="style_custom">自定义色</string>
+    <string name="style_cinema">电影边框</string>
+<string name="stroke_white">白色</string>
+    <string name="stroke_black">黑色</string>
+    <string name="stroke_auto">自动反色</string>
+    <string name="preset_default_blur">光影柔焦</string>
+    <string name="preset_magazine">杂志色卡</string>
+    <string name="preset_cinema">电影边框</string>
+    <string name="preset_warm_frame">暖白细框</string>
+    <string name="preset_custom">自定义</string>
+    <string name="bias_center">居中</string>
+    <string name="bias_left">左 %1$d%%</string>
+    <string name="bias_right">右 %1$d%%</string>
+    <string name="bias_top">上 %1$d%%</string>
+    <string name="bias_bottom">下 %1$d%%</string>
+
+    <!-- ============ 边框设置页 ============ -->
+    <string name="settings_preview_line">实时预览 · %1$s 画布 · %2$s · 当前：%3$s</string>
+<string name="label_uniform_padding">四周统一留白</string>
+    <string name="label_bottom_bar">底部留白区</string>
+    <string name="subtitle_bottom_bar">在照片下方预留一段呼吸空间（渐变样式的色卡也用它）</string>
+    <string name="label_bottom_bar_height">底部留白高度</string>
+    <string name="section_image">画面</string>
+<string name="label_image_scale">画面缩放</string>
+    <string name="label_horizontal">水平位置</string>
+    <string name="label_vertical">垂直位置</string>
+<string name="section_shape">圆角与描边</string>
+    <string name="label_corner">圆角</string>
+    <string name="label_stroke">内容细描边</string>
+    <string name="subtitle_stroke">把深色照片从深色背景里分离出来</string>
+    <string name="label_stroke_width">描边宽度</string>
+    <string name="label_stroke_color">描边颜色</string>
+    <string name="section_shadow">投影</string>
+    <string name="label_shadow">柔和投影</string>
+    <string name="label_shadow_strength">投影浓度</string>
+    <string name="label_shadow_spread">投影扩散</string>
+    <string name="label_blur_strength">背景模糊</string>
+    <string name="label_blur_dim">背景压暗</string>
+    <string name="label_blur_zoom">背景放大</string>
+    <string name="label_blur_saturation">背景饱和度</string>
+    <string name="label_blur_warmth">色系强度</string>
+    <string name="label_blur_light">背景提亮</string>
+    <string name="label_gradient_angle">渐变角度</string>
+    <string name="label_palette">底部色卡（提取图片 5 种主色）</string>
+    <string name="label_palette_count">色卡颜色数</string>
+    <string name="palette_count_display">%1$d 色</string>
+    <string name="label_gradient_start">渐变起始色（不选 = 自动取原图主色）</string>
+    <string name="action_start_auto">起始色恢复自动</string>
+    <string name="label_gradient_end">渐变终止色（不选 = 自动取次主色）</string>
+    <string name="action_end_auto">终止色恢复自动</string>
+    <string name="label_bg_palette">背景色板</string>
+    <string name="label_custom_hex">自定义 HEX，如 F5F2EC</string>
+    <string name="label_cinema_bar">遮罩高度</string>
+    <string name="label_cinema_theme">遮罩主题</string>
+    <string name="cinema_theme_black">纯黑</string>
+    <string name="cinema_theme_white">纯白</string>
+    <string name="cinema_theme_fade">柔和渐隐</string>
+    <string name="label_subtitle_letter_spacing">字间距离</string>
+    <string name="label_subtitle_line_gap">双行间距</string>
+    <string name="label_subtitle_align">字幕对齐</string>
+    <string name="cinema_align_start">左对齐</string>
+    <string name="cinema_align_center">居中</string>
+    <string name="cinema_align_end">右对齐</string>
+    <string name="label_subtitle">电影字幕（中文主行）</string>
+    <string name="subtitle_placeholder">如：人生是旷野不是轨道</string>
+    <string name="subtitle_secondary_placeholder">输入中文主字幕后自动生成</string>
+    <string name="label_subtitle_size">字幕字号</string>
+    <string name="cinema_hint">照片铺满画布，上下遮罩盖住画面边缘。中文主行由离线词库自动译成英文副行，可用开关单独关闭。主行留空则不显示字幕。</string>
+
+    <!-- ============ 结果页 ============ -->
+    <string name="result_title">结果 (%1$d)</string>
+    <string name="result_empty">暂无结果，请返回编辑</string>
+
+    <!-- ============ 语言切换 ============ -->
+    <string name="language_dialog_title">应用语言</string>
+    <string name="language_system">跟随系统</string>
+    <string name="language_zh">简体中文</string>
+    <string name="language_en">English</string>
+    <string name="language_cancel">取消</string>
+
+    <!-- ============ 关于页 ============ -->
+    <string name="about_title">关于 · 开源与捐助</string>
+    <string name="about_tagline">一张图，适配全平台 · 纯本地处理</string>
+    <string name="about_label_version">版本</string>
+    <string name="about_label_author">作者</string>
+    <string name="about_label_license">协议</string>
+    <string name="about_label_android">Android</string>
+
+    <string name="about_section_intro">关于这个应用</string>
+    <string name="about_intro_p1">「社交切图」用来把任意一张图片适配成各平台需要的尺寸：按比例裁剪、把长图切成无缝宫格，或用智能边框完整保留画面，避免切图、拓展时冒出黑边白边。</string>
+    <string name="about_intro_p2">全部图片处理都在本机完成，不需要登录、不需要上传，导出后可直接调用系统分享发到小红书、抖音、公众号、Instagram、X 等应用。</string>
+
+    <string name="about_section_privacy">隐私承诺</string>
+    <string name="about_privacy_1">不申请联网权限——可自行核对 AndroidManifest.xml，其中没有 INTERNET</string>
+    <string name="about_privacy_2">不收集任何数据：没有统计、没有埋点、没有广告、没有账号</string>
+    <string name="about_privacy_3">选图走系统相册选择器，导出走 MediaStore；图片与边框参数只留在你自己的手机上</string>
+
+    <string name="about_section_opensource">开源说明</string>
+    <string name="about_opensource_p1">本项目采用 MIT 协议，允许自由使用、修改与再分发；完整许可文本见仓库根目录 LICENSE。</string>
+    <string name="about_opensource_p2">站在这些开源项目的肩上：Kotlin 语言、Jetpack Compose 界面框架、AndroidX、Material Design 组件库与 ExifInterface。图片处理不依赖任何第三方图像库。\n也感谢所有提出建议与问题的人。</string>
+    <string name="about_opensource_repo_hint">源码仓库（MIT 协议，欢迎 issue 与 PR）：</string>
+    <string name="about_view_source">打开仓库地址</string>
+    <string name="about_copy_version">复制版本信息</string>
+    <string name="about_version_line">社交切图 v%1$s（%2$d）· Android %3$s（API %4$d）</string>
+
+    <string name="about_section_disclaimer">声明与免责</string>
+    <string name="about_disclaimer_p1">这是个人独立开发的项目，仅供个人学习与自用。原始图片的版权归其权利人所有，导出内容的使用请自行遵守各平台规则与当地法律法规。</string>
+    <string name="about_disclaimer_p2">软件按「现状」提供，不附带任何明示或暗示的担保；因使用本软件产生的后果由使用者自行承担。</string>
+
+    <string name="about_section_sponsor">支持这个项目</string>
+    <string name="about_sponsor_body">社交切图完全免费、没有广告、不做任何追踪。如果它帮到了你，欢迎请我喝杯咖啡 ☕ —— 你的支持是它继续维护下去的动力。赞助纯属自愿，不构成任何功能承诺或服务义务。</string>
+    <string name="about_sponsor_afdian">爱发电</string>
+    <string name="about_sponsor_url_afdian">https://afdian.com/a/lihoo1998</string>
+    <string name="about_sponsor_wechat">微信</string>
+    <string name="about_sponsor_alipay">支付宝</string>
+    <string name="about_qr_title_wechat">微信收款码</string>
+    <string name="about_qr_title_alipay">支付宝收款码</string>
+    <string name="about_qr_hint">长按二维码即可保存到相册</string>
+    <string name="about_qr_save">保存到相册</string>
+    <string name="toast_qr_saved">已保存到相册</string>
+    <string name="toast_qr_save_failed">保存失败，请长按二维码另行保存</string>
+    <string name="about_link_error">没有可用的浏览器打开该链接</string>
+
+    <!-- ============ 边框模式选择 / 模式专属参数（v1.6.0） ============ -->
+    <string name="platform_x">X</string>
+    <string name="action_no_frame">关闭边框</string>
+    <string name="settings_title_mode">%1$s · 参数调节</string>
+    <string name="section_padding">边框留白</string>
+<string name="section_blur_params">背景模糊参数</string>
+    <string name="section_gradient_params">渐变与色卡</string>
+    <string name="section_custom_params">背景颜色</string>
+    <string name="section_cinema_params">电影边框</string>
+
+    <!-- ============ v1.7.0：输出分辨率 / 字幕翻译 ============ -->
+<string name="label_lossless">无损输出</string>
+<string name="label_show_subtitle_secondary">显示英文副字幕</string>
+    <string name="subtitle_translation_hint">由内置离线词库翻译，可手动微调；修改中文主字幕会重新生成。</string>
+
+    <!-- ============ v1.9.x：用户水印 ============ -->
+    <string name="label_watermark">水印</string>
+    <string name="watermark_on">已开启</string>
+    <string name="watermark_off">未开启</string>
+    <string name="action_watermark_settings">水印设置</string>
+    <string name="watermark_title">水印</string>
+    <string name="watermark_enable">开启水印</string>
+    <string name="watermark_global_hint">你自己的文字或 Logo，用于纯裁剪 / 切格。无留白时水印贴边显示，「居中」为贴底居中。默认关闭。</string>
+    <string name="watermark_text">文字</string>
+    <string name="watermark_text_hint">例如 @你的名字</string>
+    <string name="watermark_show_text">显示文字</string>
+    <string name="watermark_color_white">白色</string>
+    <string name="watermark_color_black">黑色</string>
+    <string name="watermark_logo">Logo</string>
+    <string name="watermark_logo_set">已添加 Logo</string>
+    <string name="watermark_logo_path_hint">仅保存在本机，绝不上传</string>
+    <string name="watermark_add_logo">添加 Logo 图片</string>
+    <string name="watermark_clear_logo">移除 Logo</string>
+    <string name="watermark_show_logo">显示 Logo</string>
+    <string name="watermark_appearance">外观</string>
+    <string name="watermark_size">大小</string>
+    <string name="watermark_opacity">透明度</string>
+    <string name="watermark_rotation">旋转</string>
+    <string name="watermark_margin">边距</string>
+<string name="watermark_tiled">平铺整图</string>
+    <string name="watermark_shadow">加投影提升可读性</string>
+<string name="watermark_sum_both">文字 + Logo</string>
+    <string name="watermark_sum_logo">Logo</string>
+
+    <!-- ============ v1.9.3：自动 EXIF 水印 ============ -->
+    <string name="wm_auto_exif">从照片参数自动生成</string>
+    <string name="wm_auto_exif_hint">用照片的机型、镜头、光圈、快门、ISO、拍摄时间自动填充文字。截图或二次编辑过的图通常没有这些信息。</string>
+    <string name="wm_show_gps">显示 GPS 坐标</string>
+    <string name="wm_no_exif">这张照片没有拍摄参数</string>
+    <string name="wm_exif_preview">将显示：%1$s</string>
+
+    <!-- ============ v1.9.4：每边框模式独立水印 ============ -->
+<string name="watermark_frame_hint">此边框模式独立配置，不影响纯裁剪 / 切格使用的全局水印。水印落在边框留白内，不会压到照片。</string>
+
+    <!-- ============ v1.9.5：水印实时预览 ============ -->
+    <string name="wm_preview_sample">示例水印</string>
+    <string name="wm_preview_hint">实时预览 · 未设置文字或 Logo 时仅预览显示示例水印，导出不会出现。</string>
+
+    <!-- ============ v2.0：分组界面文案 ============ -->
+    <string name="home_section_features">你可以做什么</string>
+    <string name="home_feature_crop">按比例裁剪</string>
+    <string name="home_feature_crop_desc">按平台比例取景，保留想要的画面</string>
+    <string name="home_feature_frame">智能边框</string>
+    <string name="home_feature_frame_desc">背景模糊、纯色、渐变与电影边框</string>
+    <string name="home_feature_slice">长图切格</string>
+    <string name="home_feature_slice_desc">把长图等分成九宫格等多格图</string>
+    <string name="home_privacy">零权限 · 不联网 · 图片只在本机处理</string>
+    <string name="editor_section_mode">模式</string>
+    <string name="editor_section_canvas">画布</string>
+    <string name="label_orientation_group">方向</string>
+    <string name="editor_section_grid">切格</string>
+    <string name="editor_section_preview">预览</string>
+    <string name="watermark_color_label">文字颜色</string>
+    <string name="blur_tint_hint">背景是原图模糊放大，天然继承照片色系；色系强度调到 0 时背景去色成中性灰。</string>
+    <string name="action_saved">已保存</string>
+    <string name="toast_save_failed">保存失败，请重试</string>
+    <string name="toast_share_failed">没有可用的分享应用</string>
+</resources>

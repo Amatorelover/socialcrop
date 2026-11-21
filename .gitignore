@@ -1,0 +1,37 @@
+# 构建产物
+.gradle/
+.kotlin/
+build/
+app/build/
+*.apk
+
+# 本地配置
+local.properties
+.idea/
+captures/
+
+# 签名密钥（红线：绝不能入库）
+*.jks
+*.jks.*
+*.keystore
+*.keystore.*
+*.bak
+keystore.properties
+app/keystore/
+
+# 开发期临时截图 / UI dump / 一次性脚本（只忽略仓库根目录，app/src 里的资源 XML 不受影响）
+/*.png
+/*.jpg
+/*.xml
+/*.json
+/*.py
+
+# frame_preview 只保留 README 引用的几张对照图，历史素材不入库
+/frame_preview/*
+!/frame_preview/frame_styles_overview.png
+!/frame_preview/frame_params_overview.png
+!/frame_preview/blur_light_compare.png
+!/frame_preview/cinema_compare.png
+!/frame_preview/blur_shadow_compare.png
+!/frame_preview/two_layer_compare.png
+!/frame_preview/two_layer_tint.png

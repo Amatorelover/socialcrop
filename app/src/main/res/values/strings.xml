@@ -1,0 +1,266 @@
+<resources>
+    <string name="app_name">SocialCrop</string>
+
+    <!-- ============ Common actions / content descriptions ============ -->
+    <string name="cd_back">Back</string>
+    <string name="cd_about">About and sponsors</string>
+    <string name="cd_language">Language</string>
+    <string name="cd_increase">Increase</string>
+    <string name="cd_decrease">Decrease</string>
+    <string name="cd_preview">Frame preview</string>
+    <string name="action_generate">Generate</string>
+    <string name="action_done">Done</string>
+    <string name="action_reset">Reset to default</string>
+    <string name="action_save_gallery">Save to Gallery</string>
+    <string name="action_share">Share</string>
+    <string name="action_recenter">Recenter crop frame</string>
+    <string name="share_chooser_title">Share to</string>
+    <string name="toast_decode_failed">Failed to decode image, please pick another</string>
+    <string name="toast_saved">Saved %1$d images to Gallery</string>
+
+    <!-- ============ Home ============ -->
+    <string name="home_headline">One photo, every platform</string>
+    <string name="home_desc">Pick any photo and crop or slice it for Xiaohongshu, Douyin, WeChat, Instagram, X, Weibo and more.</string>
+    <string name="home_pick">Choose a photo</string>
+    <string name="home_features">Crop to ratio · Slice into a grid · Share in one tap</string>
+
+    <!-- ============ Editor ============ -->
+    <string name="editor_title">Edit</string>
+    <string name="editor_no_image">No image selected</string>
+    <string name="mode_crop">Crop to ratio</string>
+    <string name="mode_slice">Slice into grid</string>
+    <string name="label_platform">Platform</string>
+    <string name="orientation_portrait">Portrait</string>
+    <string name="orientation_landscape">Landscape</string>
+    <string name="label_ratio">Ratio: %1$s (%2$s)</string>
+    <string name="label_frame">Frame</string>
+    <string name="label_current">Current: %1$s</string>
+    <string name="frame_preview_hint">Preview is the final result: the full photo sits on a %1$s canvas with a designed background — no black or white bars.</string>
+    <string name="frame_preview_hint_original">Preview is the final result: the canvas keeps the original aspect ratio of the photo, with a designed background around it.</string>
+    <string name="crop_hint">Drag the bright frame to choose what you keep; the blurred area outside it is cropped away. Output size: %1$s.</string>
+    <string name="crop_hint_original">Original ratio (%1$s): nothing is cropped; the full photo is exported proportionally.</string>
+    <string name="slice_columns">Columns</string>
+    <string name="slice_rows">Rows</string>
+    <string name="slice_hint_plain">Will slice into %1$d cols × %2$d rows = %3$d tiles of %4$d×%5$d px — equal split at original pixels, 1:1 with no resampling and no frame; post in order to reassemble seamlessly.</string>
+    <string name="slice_hint_many">%1$d tiles in one batch may use a lot of memory; reduce the row count if the app slows down.</string>
+    <string name="frame_summary">%1$s · padding %2$d%% · corners %3$d%% · %4$s</string>
+    <string name="frame_summary_cinema">%1$s · %2$s · mask %3$d%% · %4$s</string>
+
+    <!-- ============ Platform / ratio labels ============ -->
+    <string name="platform_xhs">Xiaohongshu</string>
+    <string name="platform_douyin">Douyin</string>
+    <string name="platform_wechat">WeChat Official Account</string>
+    <string name="platform_instagram">Instagram</string>
+    <string name="platform_weibo">Weibo</string>
+    <string name="platform_generic">Custom</string>
+    <string name="ratio_portrait">Portrait</string>
+    <string name="ratio_square">Square</string>
+    <string name="ratio_fullscreen">Full screen</string>
+    <string name="ratio_cover">Cover</string>
+    <string name="ratio_lead">Lead image</string>
+    <string name="ratio_original">Original</string>
+
+    <!-- ============ Frame styles / presets ============ -->
+    <string name="style_blur">Blurred background</string>
+    <string name="style_gradient">Color gradient</string>
+    <string name="style_custom">Custom color</string>
+    <string name="style_cinema">Cinema frame</string>
+<string name="stroke_white">White</string>
+    <string name="stroke_black">Black</string>
+    <string name="stroke_auto">Auto contrast</string>
+    <string name="preset_default_blur">Studio Light</string>
+    <string name="preset_magazine">Magazine Palette</string>
+    <string name="preset_cinema">Cinema Frame</string>
+    <string name="preset_warm_frame">Warm White Frame</string>
+    <string name="preset_custom">Custom</string>
+    <string name="bias_center">Center</string>
+    <string name="bias_left">Left %1$d%%</string>
+    <string name="bias_right">Right %1$d%%</string>
+    <string name="bias_top">Top %1$d%%</string>
+    <string name="bias_bottom">Bottom %1$d%%</string>
+
+    <!-- ============ Frame settings screen ============ -->
+    <string name="settings_preview_line">Live preview · %1$s canvas · %2$s · current: %3$s</string>
+<string name="label_uniform_padding">Uniform padding</string>
+    <string name="label_bottom_bar">Bottom space</string>
+    <string name="subtitle_bottom_bar">Reserve extra breathing space below the photo (also used by the gradient palette)</string>
+    <string name="label_bottom_bar_height">Bottom space height</string>
+    <string name="section_image">Image</string>
+<string name="label_image_scale">Image scale</string>
+    <string name="label_horizontal">Horizontal</string>
+    <string name="label_vertical">Vertical</string>
+<string name="section_shape">Corners and Stroke</string>
+    <string name="label_corner">Corner radius</string>
+    <string name="label_stroke">Thin stroke</string>
+    <string name="subtitle_stroke">Separate dark photos from a dark background</string>
+    <string name="label_stroke_width">Stroke width</string>
+    <string name="label_stroke_color">Stroke color</string>
+    <string name="section_shadow">Shadow</string>
+    <string name="label_shadow">Soft shadow</string>
+    <string name="label_shadow_strength">Shadow intensity</string>
+    <string name="label_shadow_spread">Shadow spread</string>
+    <string name="label_blur_strength">Background blur</string>
+    <string name="label_blur_dim">Backdrop shading</string>
+    <string name="label_blur_zoom">Background zoom</string>
+    <string name="label_blur_saturation">Background saturation</string>
+    <string name="label_blur_warmth">Color tint strength</string>
+    <string name="label_blur_light">Backdrop lift</string>
+    <string name="label_gradient_angle">Gradient angle</string>
+    <string name="label_palette">Bottom palette (5 dominant colors from your photo)</string>
+    <string name="label_palette_count">Palette colors</string>
+    <string name="palette_count_display">%1$d colors</string>
+    <string name="label_gradient_start">Gradient start color (unset = auto from photo)</string>
+    <string name="action_start_auto">Reset start to auto</string>
+    <string name="label_gradient_end">Gradient end color (unset = auto secondary)</string>
+    <string name="action_end_auto">Reset end to auto</string>
+    <string name="label_bg_palette">Background palette</string>
+    <string name="label_custom_hex">Custom HEX, e.g. F5F2EC</string>
+    <string name="label_cinema_bar">Mask height</string>
+    <string name="label_cinema_theme">Mask theme</string>
+    <string name="cinema_theme_black">Black</string>
+    <string name="cinema_theme_white">White</string>
+    <string name="cinema_theme_fade">Soft fade</string>
+    <string name="label_subtitle_letter_spacing">Letter spacing</string>
+    <string name="label_subtitle_line_gap">Line spacing</string>
+    <string name="label_subtitle_align">Subtitle alignment</string>
+    <string name="cinema_align_start">Left</string>
+    <string name="cinema_align_center">Center</string>
+    <string name="cinema_align_end">Right</string>
+    <string name="label_subtitle">Subtitle (Chinese, main line)</string>
+    <string name="subtitle_placeholder">Type Chinese, e.g. 人生是旷野不是轨道</string>
+    <string name="subtitle_secondary_placeholder">Generated from the Chinese line above</string>
+    <string name="label_subtitle_size">Subtitle size</string>
+    <string name="cinema_hint">The photo fills the canvas and the mask covers its top and bottom edges. The Chinese line is translated offline into an English second line, which the switch can hide. Leave the main line empty for no subtitle.</string>
+
+    <!-- ============ Result ============ -->
+    <string name="result_title">Results (%1$d)</string>
+    <string name="result_empty">No results yet, go back to editing</string>
+
+    <!-- ============ Language switch ============ -->
+    <string name="language_dialog_title">App language</string>
+    <string name="language_system">Follow system</string>
+    <string name="language_zh">简体中文</string>
+    <string name="language_en">English</string>
+    <string name="language_cancel">Cancel</string>
+
+    <!-- ============ About screen ============ -->
+    <string name="about_title">About · Open Source and Sponsors</string>
+    <string name="about_tagline">One photo, every platform · on-device only</string>
+    <string name="about_label_version">Version</string>
+    <string name="about_label_author">Author</string>
+    <string name="about_label_license">License</string>
+    <string name="about_label_android">Android</string>
+
+    <string name="about_section_intro">About this app</string>
+    <string name="about_intro_p1">SocialCrop adapts any photo to the sizes each platform needs: crop to a ratio, slice a tall image into a seamless grid, or use a designed frame to keep the whole picture and avoid the black and white bars that show up when cropping or expanding.</string>
+    <string name="about_intro_p2">All image processing happens on your device. No login, no upload. Export and share straight to Xiaohongshu, Douyin, WeChat, Instagram, X and more via the system share sheet.</string>
+
+    <string name="about_section_privacy">Privacy</string>
+    <string name="about_privacy_1">No network permission — check AndroidManifest.xml yourself, there is no INTERNET</string>
+    <string name="about_privacy_2">No data collection: no analytics, no tracking, no ads, no accounts</string>
+    <string name="about_privacy_3">Photos are picked with the system Photo Picker and saved through MediaStore; images and frame settings stay on your device</string>
+
+    <string name="about_section_opensource">Open source</string>
+    <string name="about_opensource_p1">This project is licensed under the MIT License: use, modify and redistribute freely. The full text is in LICENSE at the repository root.</string>
+    <string name="about_opensource_p2">Built on Kotlin, Jetpack Compose, AndroidX, Material Design components and ExifInterface. Image processing uses no third-party image library.\nThanks to everyone who sent suggestions and bug reports.</string>
+    <string name="about_opensource_repo_hint">Source repository (MIT licensed; issues and PRs welcome):</string>
+    <string name="about_view_source">Open repository</string>
+    <string name="about_copy_version">Copy version info</string>
+    <string name="about_version_line">SocialCrop v%1$s (%2$d) · Android %3$s (API %4$d)</string>
+
+    <string name="about_section_disclaimer">Disclaimer</string>
+    <string name="about_disclaimer_p1">This is an independently developed personal project, for learning and personal use. The original photos remain the property of their owners; you are responsible for following each platform rules and local laws when using exported images.</string>
+    <string name="about_disclaimer_p2">The software is provided as is, without warranty of any kind. You bear the consequences of using it.</string>
+
+    <string name="about_section_sponsor">Support the project</string>
+    <string name="about_sponsor_body">SocialCrop is completely free, with no ads and no tracking. If it helped you, consider buying me a coffee ☕ — your support keeps it maintained. Sponsorship is entirely voluntary and comes with no feature promise or service obligation.</string>
+    <string name="about_sponsor_afdian">Aifadian</string>
+    <string name="about_sponsor_url_afdian">https://afdian.com/a/lihoo1998</string>
+    <string name="about_sponsor_wechat">WeChat Pay</string>
+    <string name="about_sponsor_alipay">Alipay</string>
+    <string name="about_qr_title_wechat">WeChat Pay QR code</string>
+    <string name="about_qr_title_alipay">Alipay QR code</string>
+    <string name="about_qr_hint">Long-press the code to save it to your gallery</string>
+    <string name="about_qr_save">Save to gallery</string>
+    <string name="toast_qr_saved">Saved to gallery</string>
+    <string name="toast_qr_save_failed">Could not save — please long-press the code instead</string>
+    <string name="about_link_error">No browser available to open the link</string>
+
+    <!-- ============ Frame mode picker / mode-scoped settings (v1.6.0) ============ -->
+    <string name="platform_x">X</string>
+    <string name="action_no_frame">Turn frame off</string>
+    <string name="settings_title_mode">%1$s · Settings</string>
+    <string name="section_padding">Padding</string>
+<string name="section_blur_params">Blurred background settings</string>
+    <string name="section_gradient_params">Gradient and palette</string>
+    <string name="section_custom_params">Background color</string>
+    <string name="section_cinema_params">Cinema frame</string>
+
+    <!-- ============ v1.7.0: output / subtitle translation ============ -->
+<string name="label_lossless">Lossless</string>
+<string name="label_show_subtitle_secondary">Show English subtitle</string>
+    <string name="subtitle_translation_hint">Translated offline from a built-in dictionary; editable here. Editing the Chinese line regenerates it.</string>
+
+    <!-- ============ v1.9.x: user watermark ============ -->
+    <string name="label_watermark">Watermark</string>
+    <string name="watermark_on">On</string>
+    <string name="watermark_off">Off</string>
+    <string name="action_watermark_settings">Watermark settings</string>
+    <string name="watermark_title">Watermark</string>
+    <string name="watermark_enable">Enable watermark</string>
+    <string name="watermark_global_hint">Your own text or logo, for plain crop and slice. Without frame padding watermarks hug the edge; center sits at the bottom. Off by default.</string>
+    <string name="watermark_text">Text</string>
+    <string name="watermark_text_hint">e.g. @yourname</string>
+    <string name="watermark_show_text">Show text</string>
+    <string name="watermark_color_white">White</string>
+    <string name="watermark_color_black">Black</string>
+    <string name="watermark_logo">Logo</string>
+    <string name="watermark_logo_set">Logo added</string>
+    <string name="watermark_logo_path_hint">Stored locally, never uploaded</string>
+    <string name="watermark_add_logo">Add logo image</string>
+    <string name="watermark_clear_logo">Remove logo</string>
+    <string name="watermark_show_logo">Show logo</string>
+    <string name="watermark_appearance">Appearance</string>
+    <string name="watermark_size">Size</string>
+    <string name="watermark_opacity">Opacity</string>
+    <string name="watermark_rotation">Rotation</string>
+    <string name="watermark_margin">Margin</string>
+<string name="watermark_tiled">Tile across image</string>
+    <string name="watermark_shadow">Shadow for legibility</string>
+<string name="watermark_sum_both">Text + Logo</string>
+    <string name="watermark_sum_logo">Logo</string>
+
+    <!-- ============ v1.9.3: auto EXIF watermark ============ -->
+    <string name="wm_auto_exif">Auto from photo EXIF</string>
+    <string name="wm_auto_exif_hint">Fill the text with the photo\'s camera, lens, aperture, shutter, ISO and date. Screenshots or re-edited images usually have none.</string>
+    <string name="wm_show_gps">Show GPS coordinates</string>
+    <string name="wm_no_exif">This photo has no shooting info</string>
+    <string name="wm_exif_preview">Will show: %1$s</string>
+
+    <!-- ============ v1.9.4: per-border-mode watermark ============ -->
+<string name="watermark_frame_hint">Configured independently for this border style; does not affect the global watermark used by crop and slice. Watermarks sit inside the frame padding, never on the photo.</string>
+
+    <!-- ============ v1.9.5: live watermark preview ============ -->
+    <string name="wm_preview_sample">SAMPLE</string>
+    <string name="wm_preview_hint">Live preview · the sample watermark is preview-only; add your own text or logo to make it real.</string>
+
+    <!-- ============ v2.0: grouped UI strings ============ -->
+    <string name="home_section_features">What you can do</string>
+    <string name="home_feature_crop">Crop to ratio</string>
+    <string name="home_feature_crop_desc">Frame the shot for any platform</string>
+    <string name="home_feature_frame">Smart frames</string>
+    <string name="home_feature_frame_desc">Blurred background, custom color, gradient and cinema borders</string>
+    <string name="home_feature_slice">Slice into grid</string>
+    <string name="home_feature_slice_desc">Split a long image into equal tiles</string>
+    <string name="home_privacy">No permissions · No network · Your photos stay on this device</string>
+    <string name="editor_section_mode">Mode</string>
+    <string name="editor_section_canvas">Canvas</string>
+    <string name="label_orientation_group">Orientation</string>
+    <string name="editor_section_grid">Grid</string>
+    <string name="editor_section_preview">Preview</string>
+    <string name="watermark_color_label">Text color</string>
+    <string name="blur_tint_hint">The backdrop is an enlarged blur of the photo, so it naturally inherits its colors; set color tint to 0 to desaturate it to neutral gray.</string>
+    <string name="action_saved">Saved</string>
+    <string name="toast_save_failed">Could not save to Gallery</string>
+    <string name="toast_share_failed">No app available to share images</string>
+</resources>
