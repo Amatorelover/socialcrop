@@ -40,6 +40,8 @@ fun M3NavBar(
     title: String? = null,
     onBack: (() -> Unit)? = null,
     backText: String? = null,
+    /** 左侧图标槽；首页用它与右侧「关于」对称放置语言入口 */
+    leading: @Composable RowScope.() -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
     showDivider: Boolean = true,
     modifier: Modifier = Modifier
@@ -59,6 +61,12 @@ fun M3NavBar(
                         modifier = Modifier.size(24.dp)
                     )
                 }
+            } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
+                    content = leading
+                )
             }
             if (title != null) {
                 Text(

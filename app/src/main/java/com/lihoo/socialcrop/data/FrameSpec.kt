@@ -42,12 +42,12 @@ data class FrameSpec(
     val fit: FrameFit = FrameFit.CONTAIN,
 
     // ===== 布局 =====
-    /** 四周统一留白，相对画布短边。v1.5.1 起四边始终对称，避免左右失衡 */
-    val paddingRatio: Float = 0.06f,
-    /** 底部额外留白条（纯色/渐变样式有效） */
-    val bottomBar: Boolean = false,
-    /** 底部留白条高度，相对画布短边 */
-    val bottomBarRatio: Float = 0.16f,
+    /** 四周统一留白，相对画布短边。v2.16.0 起出厂收窄到 1.55%，对齐参考图的细白边 */
+    val paddingRatio: Float = 0.0155f,
+    /** 底部额外留白条（纯色/渐变样式有效）。v2.16.0 起默认打开，给水印留出参考图那样的白底带 */
+    val bottomBar: Boolean = true,
+    /** 底部留白条高度，相对画布短边。0.08 ≈ 参考图 120px/1293短边 */
+    val bottomBarRatio: Float = 0.08f,
 
     // ===== 画面 =====
     /** CONTAIN 基准上的缩放系数，0.5–1.0（放大最多到填满可用区） */
@@ -58,15 +58,15 @@ data class FrameSpec(
     val verticalBias: Float = 0f,
 
     // ===== 形状 =====
-    /** 图片圆角，相对画布短边 */
-    val cornerRatio: Float = 0.035f,
+    /** 图片圆角，相对画布短边；出厂为直角，用户需要时自己调 */
+    val cornerRatio: Float = 0f,
     val stroke: Boolean = false,
     /** 描边宽度，相对画布短边 */
     val strokeWidthRatio: Float = 0.004f,
     val strokeColorMode: StrokeColor = StrokeColor.WHITE,
 
     // ===== 投影 =====
-    val shadow: Boolean = true,
+    val shadow: Boolean = false,
     /** 投影浓度倍率 0–2，1 = 默认（v1.9.0 起为真实柔化投影） */
     val shadowStrength: Float = 1.0f,
     /** 投影扩散倍率 0.3–2.5，1 = 默认扩散约画布短边的 7% */
@@ -98,6 +98,11 @@ data class FrameSpec(
     val showPalette: Boolean = true,
     /** 色卡颜色数量 0–8，0 = 关闭 */
     val paletteCount: Int = 5,
+    /** 色圈半径，相对基准底部色带高度（短边 × bottomBarRatio）；带高会随色圈自动增高。
+     *  hex 文字随半径等比缩放，整块在带内垂直居中 */
+    val paletteDotRatio: Float = 0.20f,
+    /** 色圈整块相对短边的垂直偏移，正 = 下、负 = 上；带高会自动留出偏移余量 */
+    val paletteDotOffsetY: Float = 0f,
     /** CUSTOM 样式背景色，ARGB */
     val customColor: Int = 0xFFF5F2EC.toInt(),
 
@@ -110,8 +115,8 @@ data class FrameSpec(
     val subtitle: String = "",
     /** 电影字幕副行：由主行中文离线自动翻译的英文，可手动修改；空 = 不显示 */
     val subtitleSecondary: String = "",
-    /** 是否显示英文副行 */
-    val showSubtitleSecondary: Boolean = true,
+    /** 是否显示英文副行：可选开关，默认关闭，用户需要时再打开 */
+    val showSubtitleSecondary: Boolean = false,
     /** 字幕主行字号，相对画布短边 */
     val subtitleSizeRatio: Float = 0.038f,
     /** 字幕字间距（em），0 = 正常 */
@@ -151,16 +156,14 @@ data class FrameSpec(
 const val OUT_WIDTH_LOSSLESS = 0
 
 object FramePalettes {
-    /** 自定义背景色候选（暖白 / 米白 / 浅灰 / 深灰 / 墨绿 / 炭黑 / 雾蓝 / 藕粉） */
+    /** 自定义背景色候选：纯白 / 暖白 / 浅灰 / 中灰 / 深灰 / 纯黑（最后再附一个色盘自定义入口） */
     val CUSTOM_COLORS = listOf(
-        0xFFFAFAFA.toInt(),
+        0xFFFFFFFF.toInt(),
         0xFFF5F2EC.toInt(),
         0xFFE8E8E8.toInt(),
-        0xFF5A5F5C.toInt(),
-        0xFF2E4034.toInt(),
-        0xFF1A1A1A.toInt(),
-        0xFFCFDCE5.toInt(),
-        0xFFEAD9D2.toInt()
+        0xFF8A8F8C.toInt(),
+        0xFF3A3F3C.toInt(),
+        0xFF000000.toInt()
     )
 
     /** 渐变 / 描边可选强调色 */
@@ -185,12 +188,12 @@ object FramePresets {
             FrameSpec(
                 enabled = true,
                 style = FrameStyle.BLUR,
-                // 光影构图：略窄的四边留白 + 底部额外呼吸区，照片浮在柔光背景上
-                paddingRatio = 0.071f,
+                // v2.16.0：对齐参考图——四周细白边 + 底部留白带（关掉底部留白即纯细边）
+                paddingRatio = 0.0155f,
                 bottomBar = true,
-                bottomBarRatio = 0.06f,
-                cornerRatio = 0.022f,
-                shadow = true,
+                bottomBarRatio = 0.08f,
+                cornerRatio = 0f,
+                shadow = false,
                 shadowStrength = 1.0f,
                 blurStrength = 0.86f,
                 blurDim = 0.26f,
@@ -206,8 +209,8 @@ object FramePresets {
             FrameSpec(
                 enabled = true,
                 style = FrameStyle.GRADIENT,
-                paddingRatio = 0.07f,
-                cornerRatio = 0.05f,
+                paddingRatio = 0.0155f,
+                cornerRatio = 0f,
                 showPalette = true,
                 paletteCount = 5,
                 gradientAngle = 75f,
@@ -237,9 +240,9 @@ object FramePresets {
                 enabled = true,
                 style = FrameStyle.CUSTOM,
                 customColor = 0xFFF5F2EC.toInt(),
-                paddingRatio = 0.05f,
-                cornerRatio = 0.02f,
-                stroke = true,
+                paddingRatio = 0.0155f,
+                cornerRatio = 0f,
+                stroke = false,
                 strokeWidthRatio = 0.003f,
                 strokeColorMode = StrokeColor.WHITE,
                 presetName = "暖白细框"

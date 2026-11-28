@@ -8,6 +8,7 @@
     <string name="cd_increase">加</string>
     <string name="cd_decrease">减</string>
     <string name="cd_preview">边框效果预览</string>
+    <string name="preview_unavailable">预览暂不可用</string>
     <string name="action_generate">生成</string>
     <string name="action_done">完成</string>
     <string name="action_reset">恢复默认</string>
@@ -20,9 +21,7 @@
 
     <!-- ============ 首页 ============ -->
     <string name="home_headline">一张图，适配全平台</string>
-    <string name="home_desc">上传任意图片，自动裁剪或切格为小红书 / 抖音 / 公众号 / Instagram / X / 微博 等合适尺寸。</string>
     <string name="home_pick">选择图片</string>
-    <string name="home_features">支持：按比例裁剪 · 长图切格(九宫格) · 系统一键分享</string>
 
     <!-- ============ 编辑页 ============ -->
     <string name="editor_title">编辑</string>
@@ -108,13 +107,16 @@
     <string name="label_gradient_angle">渐变角度</string>
     <string name="label_palette">底部色卡（提取图片 5 种主色）</string>
     <string name="label_palette_count">色卡颜色数</string>
+    <string name="label_palette_dot_size">色圈大小</string>
+    <string name="label_palette_dot_offset">色圈上下位置</string>
     <string name="palette_count_display">%1$d 色</string>
     <string name="label_gradient_start">渐变起始色（不选 = 自动取原图主色）</string>
     <string name="action_start_auto">起始色恢复自动</string>
     <string name="label_gradient_end">渐变终止色（不选 = 自动取次主色）</string>
     <string name="action_end_auto">终止色恢复自动</string>
     <string name="label_bg_palette">背景色板</string>
-    <string name="label_custom_hex">自定义 HEX，如 F5F2EC</string>
+    <string name="label_custom_color">自定义颜色</string>
+    <string name="color_picker_title">色盘取色</string>
     <string name="label_cinema_bar">遮罩高度</string>
     <string name="label_cinema_theme">遮罩主题</string>
     <string name="cinema_theme_black">纯黑</string>
@@ -211,7 +213,6 @@
     <string name="watermark_global_hint">你自己的文字或 Logo，用于纯裁剪 / 切格。无留白时水印贴边显示，「居中」为贴底居中。默认关闭。</string>
     <string name="watermark_text">文字</string>
     <string name="watermark_text_hint">例如 @你的名字</string>
-    <string name="watermark_show_text">显示文字</string>
     <string name="watermark_color_white">白色</string>
     <string name="watermark_color_black">黑色</string>
     <string name="watermark_logo">Logo</string>
@@ -219,40 +220,86 @@
     <string name="watermark_logo_path_hint">仅保存在本机，绝不上传</string>
     <string name="watermark_add_logo">添加 Logo 图片</string>
     <string name="watermark_clear_logo">移除 Logo</string>
-    <string name="watermark_show_logo">显示 Logo</string>
+    <!-- v2.5.0：内容即显示 + 三类水印各自位移 -->
+    <string name="wm_enable_first">打开上方开关后，先统一设置样式，再添加图片、照片参数或文字水印。</string>
+    <string name="wm_text_author">作者名字</string>
+    <string name="wm_text_time">时间戳</string>
+    <string name="wm_time_value">自动生成时间戳：%1$s</string>
+    <string name="wm_move_logo">Logo 位置</string>
+    <string name="wm_move_text">文字位置</string>
+    <string name="wm_move_exif">照片参数位置</string>
+    <string name="wm_move_up">上移</string>
+    <string name="wm_move_down">下移</string>
+    <string name="wm_move_left">左移</string>
+    <string name="wm_move_right">右移</string>
+    <string name="wm_move_reset">复位</string>
+    <string name="wm_move_block">整体位置</string>
+    <string name="wm_move_block_hint">大步长移动整个水印；各类型的精细微调在各分类下单独设置</string>
+    <!-- v2.4.0: 内置手机 / 相机品牌 Logo，随包离线提供 -->
+    <string name="wm_tab_image">图片水印</string>
+    <string name="wm_tab_text">文字水印</string>
+    <string name="wm_tab_exif">照片参数</string>
+    <string name="wm_exif_section_title">照片参数自动识别</string>
+    <string name="wm_appearance_hint">开启水印后统一设置，作用于所有水印类型。</string>
+    <string name="wm_common_title">通用设置</string>
+    <string name="wm_device_on">手机型号</string>
+    <string name="wm_device_hint">打开时自动识别照片，可直接修改</string>
+    <string name="wm_device_redetect">重新识别机型</string>
+    <string name="wm_lens_on">镜头参数</string>
+    <string name="wm_brand_pick">选择品牌 Logo</string>
+    <string name="wm_brand_picker_title">内置品牌 Logo</string>
+    <string name="wm_brand_picker_close">关闭</string>
+    <string name="wm_brand_tab_phone">手机品牌</string>
+    <string name="wm_brand_tab_camera">相机品牌</string>
+    <string name="wm_logo_tint">Logo 颜色</string>
+    <string name="wm_logo_tint_original">原色</string>
+    <string name="wm_logo_tint_white">白色</string>
+    <string name="wm_logo_tint_black">黑色</string>
+    <string name="brand_apple">Apple</string>
+    <string name="brand_samsung">三星</string>
+    <string name="brand_xiaomi">小米</string>
+    <string name="brand_huawei">华为</string>
+    <string name="brand_honor">荣耀</string>
+    <string name="brand_oppo">OPPO</string>
+    <string name="brand_vivo">vivo</string>
+    <string name="brand_oneplus">一加</string>
+    <string name="brand_realme">realme</string>
+    <string name="brand_redmi">REDMI</string>
+    <string name="brand_googlepixel">Pixel</string>
+    <string name="brand_sony">索尼</string>
+    <string name="brand_motorola">摩托罗拉</string>
+    <string name="brand_lenovo">联想</string>
+    <string name="brand_zte">中兴</string>
+    <string name="brand_meizu">魅族</string>
+    <string name="brand_canon">佳能</string>
+    <string name="brand_nikon">尼康</string>
+    <string name="brand_fujifilm">富士</string>
+    <string name="brand_panasonic">松下</string>
+    <string name="brand_leica">徕卡</string>
+    <string name="brand_hasselblad">哈苏</string>
+    <string name="brand_zeiss">蔡司</string>
+    <string name="brand_kodak">柯达</string>
+    <string name="brand_gopro">GoPro</string>
+    <string name="brand_dji">大疆</string>
+    <string name="brand_ricoh">理光</string>
+    <string name="brand_phaseone">飞思</string>
     <string name="watermark_appearance">外观</string>
     <string name="watermark_size">大小</string>
     <string name="watermark_opacity">透明度</string>
     <string name="watermark_rotation">旋转</string>
-    <string name="watermark_margin">边距</string>
 <string name="watermark_tiled">平铺整图</string>
     <string name="watermark_shadow">加投影提升可读性</string>
 <string name="watermark_sum_both">文字 + Logo</string>
     <string name="watermark_sum_logo">Logo</string>
 
     <!-- ============ v1.9.3：自动 EXIF 水印 ============ -->
-    <string name="wm_auto_exif">从照片参数自动生成</string>
-    <string name="wm_auto_exif_hint">用照片的机型、镜头、光圈、快门、ISO、拍摄时间自动填充文字。截图或二次编辑过的图通常没有这些信息。</string>
-    <string name="wm_show_gps">显示 GPS 坐标</string>
-    <string name="wm_no_exif">这张照片没有拍摄参数</string>
-    <string name="wm_exif_preview">将显示：%1$s</string>
 
     <!-- ============ v1.9.4：每边框模式独立水印 ============ -->
 <string name="watermark_frame_hint">此边框模式独立配置，不影响纯裁剪 / 切格使用的全局水印。水印落在边框留白内，不会压到照片。</string>
 
     <!-- ============ v1.9.5：水印实时预览 ============ -->
-    <string name="wm_preview_sample">示例水印</string>
-    <string name="wm_preview_hint">实时预览 · 未设置文字或 Logo 时仅预览显示示例水印，导出不会出现。</string>
 
     <!-- ============ v2.0：分组界面文案 ============ -->
-    <string name="home_section_features">你可以做什么</string>
-    <string name="home_feature_crop">按比例裁剪</string>
-    <string name="home_feature_crop_desc">按平台比例取景，保留想要的画面</string>
-    <string name="home_feature_frame">智能边框</string>
-    <string name="home_feature_frame_desc">背景模糊、纯色、渐变与电影边框</string>
-    <string name="home_feature_slice">长图切格</string>
-    <string name="home_feature_slice_desc">把长图等分成九宫格等多格图</string>
-    <string name="home_privacy">零权限 · 不联网 · 图片只在本机处理</string>
     <string name="editor_section_mode">模式</string>
     <string name="editor_section_canvas">画布</string>
     <string name="label_orientation_group">方向</string>
@@ -263,4 +310,20 @@
     <string name="action_saved">已保存</string>
     <string name="toast_save_failed">保存失败，请重试</string>
     <string name="toast_share_failed">没有可用的分享应用</string>
+    <!-- v2.8.0：有 Logo 时照片参数 / 文字水印互斥提示 -->
+    <string name="wm_exclusive_text_off">已有 Logo，文字水印已关闭：文字与照片参数只能二选一</string>
+    <string name="wm_exclusive_exif_off">已有 Logo，照片参数已关闭：文字与照片参数只能二选一</string>
+    <!-- v2.14.0 -->
+    <string name="wm_align_label">水平对齐</string>
+    <string name="wm_align_left">左对齐</string>
+    <string name="wm_align_center">居中</string>
+    <string name="wm_align_right">右对齐</string>
+    <string name="preview_zoom_hint">双指缩放预览，单指拖动平移；缩放只影响查看，不改变导出。</string>
+    <!-- v2.15.0 -->
+    <string name="wm_block_align_label">水印在照片上的位置</string>
+    <string name="wm_block_align_center">居中</string>
+    <string name="wm_block_align_left">左对齐</string>
+    <string name="wm_block_align_right">右对齐</string>
+    <string name="wm_block_align_sides">两边对齐</string>
+    <string name="wm_sides_invalid">两边对齐需要「Logo + 文字」或「Logo + 照片参数」，且两类只能选其一</string>
 </resources>

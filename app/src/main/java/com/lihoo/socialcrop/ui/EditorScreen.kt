@@ -39,7 +39,6 @@ import com.lihoo.socialcrop.ui.components.CropView
 import com.lihoo.socialcrop.ui.components.FramePreview
 import com.lihoo.socialcrop.ui.components.SlicePreview
 import com.lihoo.socialcrop.ui.components.WatermarkPreview
-import com.lihoo.socialcrop.ui.components.hasPreviewContent
 import com.lihoo.socialcrop.ui.materialyou.M3
 import com.lihoo.socialcrop.ui.materialyou.M3BottomBar
 import com.lihoo.socialcrop.ui.materialyou.M3Chevron
@@ -155,21 +154,13 @@ fun EditorScreen(nav: NavController, vm: EditorViewModel) {
                                 slice = if (!isCrop) vm.columns to vm.rows else null,
                                 cropCenterX = vm.cropCenterX,
                                 cropCenterY = vm.cropCenterY,
+                                exif = vm.exifInfo,
                                 modifier = Modifier.fillMaxWidth().aspectRatio(
                                     (if (isCrop) vm.ratioValue else {
                                         val plan = ImageProcessor.planGrid(src.width, src.height, vm.columns, vm.rows)
                                         plan.cellW.toFloat() / plan.cellH.coerceAtLeast(1)
                                     }).coerceIn(0.25f, 4f)
                                 )
-                            )
-                        }
-                        if (!wmGlobal.hasPreviewContent()) {
-                            Text(
-                                stringResource(R.string.wm_preview_hint),
-                                fontSize = 13.sp,
-                                color = p.secondaryLabel,
-                                lineHeight = 17.sp,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                             )
                         }
                     }
@@ -354,6 +345,9 @@ fun EditorScreen(nav: NavController, vm: EditorViewModel) {
                                 spec = frame,
                                 targetRatio = vm.ratioValue,
                                 watermark = vm.getWatermark(WatermarkTarget.Frame(frame.style)),
+                                // 机型 / 镜头水印由 EXIF 现算；这里漏传会让设置页正常、
+                                // 退回编辑页却看不到参数水印，必须与导出链路一致。
+                                exif = vm.exifInfo,
                                 modifier = previewModifier
                             )
                         } else {
@@ -368,7 +362,10 @@ fun EditorScreen(nav: NavController, vm: EditorViewModel) {
                                 onCropped = { bmp ->
                                     vm.result = listOf(vm.applyWatermark(bmp))
                                     nav.navigate("result") { launchSingleTop = true }
-                                }
+                                },
+                                // 关闭边框时主预览也显示全局水印（落在取景框底部），与导出一致
+                                watermark = vm.getWatermark(WatermarkTarget.Global),
+                                exif = vm.exifInfo
                             )
                         }
                     } else {

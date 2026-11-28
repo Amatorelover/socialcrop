@@ -133,20 +133,20 @@ fun biasText(value: Float, horizontal: Boolean): String {
     }
 }
 
-/** 编辑页水印卡片的内容摘要（未开启 / 文字 / Logo / 两者） */
+/** 编辑页水印卡片的内容摘要：按已开启的类别组合显示，未开启显示「未开启」 */
 @Composable
 fun watermarkSummary(wm: WatermarkSpec): String {
     if (!wm.enabled) return stringResource(R.string.watermark_off)
-    // 自动 EXIF：文字由照片参数生成，没读到参数时单独提示
-    if (wm.autoExif) {
-        return if (wm.text.isNotBlank()) wm.text else stringResource(R.string.wm_no_exif)
-    }
-    val hasLogo = wm.showLogo && wm.logoPath.isNotBlank()
-    val hasText = wm.showText && wm.text.isNotBlank()
+    val parts = mutableListOf<String>()
+    if (wm.logoPath.isNotBlank()) parts += stringResource(R.string.watermark_sum_logo)
+    if (wm.deviceOn || wm.lensOn) parts += stringResource(R.string.wm_tab_exif)
+    val hasAuthor = wm.authorOn && wm.text.isNotBlank()
+    val hasTime = wm.timeOn && wm.timeText.isNotBlank()
+    if (hasAuthor || hasTime) parts += stringResource(R.string.wm_tab_text)
     return when {
-        hasLogo && hasText -> stringResource(R.string.watermark_sum_both)
-        hasLogo -> stringResource(R.string.watermark_sum_logo)
-        hasText -> wm.text
-        else -> stringResource(R.string.watermark_off)
+        parts.isEmpty() -> stringResource(R.string.watermark_off)
+        parts.size == 1 && hasAuthor -> wm.text
+        parts.size == 1 && hasTime -> wm.timeText
+        else -> parts.joinToString(" + ")
     }
 }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.lihoo.socialcrop.data.FrameSpec
 import com.lihoo.socialcrop.data.WatermarkSpec
+import com.lihoo.socialcrop.util.ExifInfo
 
 /**
  * 边框效果预览：与导出共用 FrameRenderer，保证所见即所得。
@@ -17,13 +18,15 @@ fun FramePreview(
     spec: FrameSpec,
     targetRatio: Float,
     watermark: WatermarkSpec = WatermarkSpec(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    exif: ExifInfo? = null
 ) {
     WatermarkPreview(
         src = src,
         watermark = watermark,
         modifier = modifier,
         frame = spec,
-        targetRatio = targetRatio
+        targetRatio = targetRatio,
+        exif = exif
     )
 }

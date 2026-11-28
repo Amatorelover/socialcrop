@@ -8,6 +8,7 @@
     <string name="cd_increase">Increase</string>
     <string name="cd_decrease">Decrease</string>
     <string name="cd_preview">Frame preview</string>
+    <string name="preview_unavailable">Preview unavailable</string>
     <string name="action_generate">Generate</string>
     <string name="action_done">Done</string>
     <string name="action_reset">Reset to default</string>
@@ -20,9 +21,7 @@
 
     <!-- ============ Home ============ -->
     <string name="home_headline">One photo, every platform</string>
-    <string name="home_desc">Pick any photo and crop or slice it for Xiaohongshu, Douyin, WeChat, Instagram, X, Weibo and more.</string>
     <string name="home_pick">Choose a photo</string>
-    <string name="home_features">Crop to ratio · Slice into a grid · Share in one tap</string>
 
     <!-- ============ Editor ============ -->
     <string name="editor_title">Edit</string>
@@ -108,13 +107,16 @@
     <string name="label_gradient_angle">Gradient angle</string>
     <string name="label_palette">Bottom palette (5 dominant colors from your photo)</string>
     <string name="label_palette_count">Palette colors</string>
+    <string name="label_palette_dot_size">Palette dot size</string>
+    <string name="label_palette_dot_offset">Palette vertical position</string>
     <string name="palette_count_display">%1$d colors</string>
     <string name="label_gradient_start">Gradient start color (unset = auto from photo)</string>
     <string name="action_start_auto">Reset start to auto</string>
     <string name="label_gradient_end">Gradient end color (unset = auto secondary)</string>
     <string name="action_end_auto">Reset end to auto</string>
     <string name="label_bg_palette">Background palette</string>
-    <string name="label_custom_hex">Custom HEX, e.g. F5F2EC</string>
+    <string name="label_custom_color">Custom color</string>
+    <string name="color_picker_title">Pick a color</string>
     <string name="label_cinema_bar">Mask height</string>
     <string name="label_cinema_theme">Mask theme</string>
     <string name="cinema_theme_black">Black</string>
@@ -211,7 +213,6 @@
     <string name="watermark_global_hint">Your own text or logo, for plain crop and slice. Without frame padding watermarks hug the edge; center sits at the bottom. Off by default.</string>
     <string name="watermark_text">Text</string>
     <string name="watermark_text_hint">e.g. @yourname</string>
-    <string name="watermark_show_text">Show text</string>
     <string name="watermark_color_white">White</string>
     <string name="watermark_color_black">Black</string>
     <string name="watermark_logo">Logo</string>
@@ -219,40 +220,86 @@
     <string name="watermark_logo_path_hint">Stored locally, never uploaded</string>
     <string name="watermark_add_logo">Add logo image</string>
     <string name="watermark_clear_logo">Remove logo</string>
-    <string name="watermark_show_logo">Show logo</string>
+    <!-- v2.5.0: content-driven watermarks + per-source movement -->
+    <string name="wm_enable_first">Turn on the switch above, set the common style once, then add image, photo or text watermarks.</string>
+    <string name="wm_text_author">Author name</string>
+    <string name="wm_text_time">Timestamp</string>
+    <string name="wm_time_value">Generated timestamp: %1$s</string>
+    <string name="wm_move_logo">Logo position</string>
+    <string name="wm_move_text">Text position</string>
+    <string name="wm_move_exif">Photo parameters position</string>
+    <string name="wm_move_up">Move up</string>
+    <string name="wm_move_down">Move down</string>
+    <string name="wm_move_left">Move left</string>
+    <string name="wm_move_right">Move right</string>
+    <string name="wm_move_reset">Reset position</string>
+    <string name="wm_move_block">Overall position</string>
+    <string name="wm_move_block_hint">Moves the whole watermark in larger steps; fine-tune each type in its own tab.</string>
+    <!-- v2.4.0: built-in phone / camera brand logos (bundled offline) -->
+    <string name="wm_tab_image">Image</string>
+    <string name="wm_tab_text">Text</string>
+    <string name="wm_tab_exif">EXIF</string>
+    <string name="wm_exif_section_title">Photo parameters</string>
+    <string name="wm_appearance_hint">Set once after enabling the watermark; applies to every watermark type.</string>
+    <string name="wm_common_title">Common settings</string>
+    <string name="wm_device_on">Device model</string>
+    <string name="wm_device_hint">Auto-detected from photo; edit freely</string>
+    <string name="wm_device_redetect">Re-detect from photo</string>
+    <string name="wm_lens_on">Lens parameters</string>
+    <string name="wm_brand_pick">Pick a brand logo</string>
+    <string name="wm_brand_picker_title">Brand logos</string>
+    <string name="wm_brand_picker_close">Close</string>
+    <string name="wm_brand_tab_phone">Phones</string>
+    <string name="wm_brand_tab_camera">Cameras</string>
+    <string name="wm_logo_tint">Logo color</string>
+    <string name="wm_logo_tint_original">Original</string>
+    <string name="wm_logo_tint_white">White</string>
+    <string name="wm_logo_tint_black">Black</string>
+    <string name="brand_apple">Apple</string>
+    <string name="brand_samsung">Samsung</string>
+    <string name="brand_xiaomi">Xiaomi</string>
+    <string name="brand_huawei">Huawei</string>
+    <string name="brand_honor">Honor</string>
+    <string name="brand_oppo">OPPO</string>
+    <string name="brand_vivo">vivo</string>
+    <string name="brand_oneplus">OnePlus</string>
+    <string name="brand_realme">realme</string>
+    <string name="brand_redmi">REDMI</string>
+    <string name="brand_googlepixel">Pixel</string>
+    <string name="brand_sony">Sony</string>
+    <string name="brand_motorola">Motorola</string>
+    <string name="brand_lenovo">Lenovo</string>
+    <string name="brand_zte">ZTE</string>
+    <string name="brand_meizu">Meizu</string>
+    <string name="brand_canon">Canon</string>
+    <string name="brand_nikon">Nikon</string>
+    <string name="brand_fujifilm">Fujifilm</string>
+    <string name="brand_panasonic">Panasonic</string>
+    <string name="brand_leica">Leica</string>
+    <string name="brand_hasselblad">Hasselblad</string>
+    <string name="brand_zeiss">ZEISS</string>
+    <string name="brand_kodak">Kodak</string>
+    <string name="brand_gopro">GoPro</string>
+    <string name="brand_dji">DJI</string>
+    <string name="brand_ricoh">Ricoh</string>
+    <string name="brand_phaseone">Phase One</string>
     <string name="watermark_appearance">Appearance</string>
     <string name="watermark_size">Size</string>
     <string name="watermark_opacity">Opacity</string>
     <string name="watermark_rotation">Rotation</string>
-    <string name="watermark_margin">Margin</string>
 <string name="watermark_tiled">Tile across image</string>
     <string name="watermark_shadow">Shadow for legibility</string>
 <string name="watermark_sum_both">Text + Logo</string>
     <string name="watermark_sum_logo">Logo</string>
 
     <!-- ============ v1.9.3: auto EXIF watermark ============ -->
-    <string name="wm_auto_exif">Auto from photo EXIF</string>
-    <string name="wm_auto_exif_hint">Fill the text with the photo\'s camera, lens, aperture, shutter, ISO and date. Screenshots or re-edited images usually have none.</string>
-    <string name="wm_show_gps">Show GPS coordinates</string>
-    <string name="wm_no_exif">This photo has no shooting info</string>
-    <string name="wm_exif_preview">Will show: %1$s</string>
 
     <!-- ============ v1.9.4: per-border-mode watermark ============ -->
 <string name="watermark_frame_hint">Configured independently for this border style; does not affect the global watermark used by crop and slice. Watermarks sit inside the frame padding, never on the photo.</string>
 
     <!-- ============ v1.9.5: live watermark preview ============ -->
-    <string name="wm_preview_sample">SAMPLE</string>
-    <string name="wm_preview_hint">Live preview · the sample watermark is preview-only; add your own text or logo to make it real.</string>
 
     <!-- ============ v2.0: grouped UI strings ============ -->
-    <string name="home_section_features">What you can do</string>
-    <string name="home_feature_crop">Crop to ratio</string>
-    <string name="home_feature_crop_desc">Frame the shot for any platform</string>
-    <string name="home_feature_frame">Smart frames</string>
-    <string name="home_feature_frame_desc">Blurred background, custom color, gradient and cinema borders</string>
-    <string name="home_feature_slice">Slice into grid</string>
-    <string name="home_feature_slice_desc">Split a long image into equal tiles</string>
-    <string name="home_privacy">No permissions · No network · Your photos stay on this device</string>
     <string name="editor_section_mode">Mode</string>
     <string name="editor_section_canvas">Canvas</string>
     <string name="label_orientation_group">Orientation</string>
@@ -263,4 +310,20 @@
     <string name="action_saved">Saved</string>
     <string name="toast_save_failed">Could not save to Gallery</string>
     <string name="toast_share_failed">No app available to share images</string>
+    <!-- v2.8.0: 有 Logo 时照片参数 / 文字水印互斥提示 -->
+    <string name="wm_exclusive_text_off">Text watermark turned off — with a logo, choose text or photo parameters</string>
+    <string name="wm_exclusive_exif_off">Photo parameters turned off — with a logo, choose text or photo parameters</string>
+    <!-- v2.14.0 -->
+    <string name="wm_align_label">Horizontal alignment</string>
+    <string name="wm_align_left">Left</string>
+    <string name="wm_align_center">Center</string>
+    <string name="wm_align_right">Right</string>
+    <string name="preview_zoom_hint">Pinch to zoom, drag to pan. Zoom affects the preview only.</string>
+    <!-- v2.15.0 -->
+    <string name="wm_block_align_label">Watermark position on photo</string>
+    <string name="wm_block_align_center">Center</string>
+    <string name="wm_block_align_left">Left</string>
+    <string name="wm_block_align_right">Right</string>
+    <string name="wm_block_align_sides">Both sides</string>
+    <string name="wm_sides_invalid">Both sides needs a logo plus exactly one of text or photo parameters.</string>
 </resources>

@@ -16,8 +16,8 @@ val hasSigningKey = keystorePropsFile.exists() &&
     !keystoreProps.getProperty("storePassword").isNullOrBlank()
 
 // 版本号唯一来源：versionName / versionCode 与关于页展示的 BuildConfig 字段共用
-val appVersionCode = 33
-val appVersionName = "2.2.0"
+val appVersionCode = 54
+val appVersionName = "2.21.0"
 
 android {
     namespace = "com.lihoo.socialcrop"

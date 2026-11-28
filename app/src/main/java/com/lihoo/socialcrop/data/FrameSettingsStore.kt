@@ -58,6 +58,8 @@ object FrameSettingsStore {
                     o.optInt("gradientEnd") else null,
                 showPalette = o.optBoolean("showPalette", d.showPalette),
                 paletteCount = o.optInt("paletteCount", d.paletteCount),
+                paletteDotRatio = o.optDouble("paletteDotRatio", d.paletteDotRatio.toDouble()).toFloat(),
+                paletteDotOffsetY = o.optDouble("paletteDotOffsetY", d.paletteDotOffsetY.toDouble()).toFloat(),
                 customColor = migratedColor ?: o.optInt("customColor", d.customColor),
                 cinemaBarRatio = o.optDouble("cinemaBarRatio", d.cinemaBarRatio.toDouble()).toFloat(),
                 cinemaTheme = enumOr(o, "cinemaTheme", d.cinemaTheme),
@@ -104,6 +106,8 @@ object FrameSettingsStore {
             if (spec.gradientEnd != null) put("gradientEnd", spec.gradientEnd)
             put("showPalette", spec.showPalette)
             put("paletteCount", spec.paletteCount)
+            put("paletteDotRatio", spec.paletteDotRatio.toDouble())
+            put("paletteDotOffsetY", spec.paletteDotOffsetY.toDouble())
             put("customColor", spec.customColor)
             put("cinemaBarRatio", spec.cinemaBarRatio.toDouble())
             put("cinemaTheme", spec.cinemaTheme.name)

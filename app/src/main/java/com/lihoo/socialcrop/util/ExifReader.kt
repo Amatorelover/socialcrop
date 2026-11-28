@@ -4,13 +4,16 @@ import android.content.Context
 import android.net.Uri
 import androidx.exifinterface.media.ExifInterface
 import java.io.InputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * 读取照片 EXIF（拍摄参数），完全本地、不联网、不需要任何权限。
  * 仅从用户用系统选图器挑入的图片里读取其本身携带的元信息。
  *
  * 注意：截图、微信/QQ/WhatsApp 转发压缩、二次编辑保存的图，EXIF 基本被剥离，读不到属正常。
- * GPS 属于敏感信息，这里只解析、默认不展示、绝不上传。
+ * v2.7.0 起彻底不解析 GPS 坐标：水印不再提供地点行，照片位置信息连本机都不读取。
  */
 data class ExifInfo(
     val make: String? = null,
@@ -19,16 +22,11 @@ data class ExifInfo(
     val exposureTime: Double? = null,
     val iso: Int? = null,
     val focalLength: Double? = null,
-    val dateTime: String? = null,
-    val gpsLat: Double? = null,
-    val gpsLon: Double? = null
+    val dateTime: String? = null
 ) {
     /** 是否至少读到了一项拍摄参数 */
     val available: Boolean
         get() = listOfNotNull(make, model, fNumber, exposureTime, iso, focalLength, dateTime).isNotEmpty()
-
-    val hasGps: Boolean
-        get() = gpsLat != null && gpsLon != null
 }
 
 object ExifReader {
@@ -53,10 +51,6 @@ object ExifReader {
             val focalLength = exif.getAttributeDouble(ExifInterface.TAG_FOCAL_LENGTH, Double.NaN).takeIf { !it.isNaN() }
             val dateTime = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL)
                 ?: exif.getAttribute(ExifInterface.TAG_DATETIME)
-            val coords = exif.latLong
-            val lat = coords?.getOrNull(0)
-            val lon = coords?.getOrNull(1)
-
             ExifInfo(
                 make = make,
                 model = model,
@@ -64,33 +58,89 @@ object ExifReader {
                 exposureTime = exposureTime,
                 iso = iso,
                 focalLength = focalLength,
-                dateTime = dateTime?.trim(),
-                gpsLat = lat,
-                gpsLon = lon
+                dateTime = dateTime?.trim()
             )
         }.getOrNull()
     }
 
     /**
-     * 把拍摄参数拼成水印文字，例如：
-     * "iPhone 16 Pro · f/1.8 · 1/120s · ISO64 · 24mm"
-     * 当 showGps 为真且存在 GPS 时，末尾追加坐标（如 "31.230°N 121.474°E"）。
-     * 无拍摄参数时返回空串。
+     * 无 Logo 时第一行自动文字：品牌 + 机型，如 "SAMSUNG S9280" / "Apple iPhone 16 Pro"。
+     * 机型首字母统一大写，避免个别厂商 EXIF 写入全小写型号时显得突兀。
      */
-    fun formatWatermarkText(info: ExifInfo?, showGps: Boolean): String {
-        if (info == null || !info.available) return ""
+    fun formatDeviceLine(info: ExifInfo?): String {
+        if (info == null) return ""
+        return capitalizeFirst(buildDevice(info.make, info.model))
+    }
+
+    /**
+     * 有 Logo 时第一行只留机型后缀，把品牌前缀全部剥掉，避免和 Logo 重复：
+     * "iPhone 16 Pro" → "16 Pro"、"HUAWEI P60 Pro" → "P60 Pro"、"SM-S9280" → "S9280"。
+     * 首字母统一大写（"s9280" → "S9280"），所有品牌一致。
+     */
+    fun formatModelLine(info: ExifInfo?): String {
+        if (info == null) return ""
+        val model = info.model?.trim().orEmpty()
+        val make = info.make?.trim().orEmpty()
+        if (model.isBlank()) return capitalizeFirst(make)
+        val suffix = stripBrandPrefix(model)
+        return capitalizeFirst(suffix.ifBlank { model })
+    }
+
+    /**
+     * 反复剥掉型号开头的品牌词 + 分隔符，直到遇到非品牌词为止。
+     * 品牌词后必须紧跟非字母（空格 / 连字符 / 数字 / 逗号），避免把 "Mix" 误剥成 "x"。
+     */
+    private fun stripBrandPrefix(model: String): String {
+        val brandPrefix = Regex(
+            "(?i)^(iphone|ipad|apple|samsung|sm|huawei|honor|xiaomi|redmi|mi|oppo|oneplus|" +
+                "vivo|iqoo|realme|google|pixel|sony|xperia|motorola|moto|lenovo|zte|meizu|" +
+                "nokia|lg|htc|asus|sharp|tecno|infinix|canon|nikon|fujifilm|panasonic|lumix|" +
+                "leica|hasselblad|sigma|zeiss|kodak|gopro|dji|ricoh|phaseone|casio)" +
+                "(?=[^a-zA-Z]|$)[\\s\\-_,]*"
+        )
+        var s = model.trim()
+        while (true) {
+            val matched = brandPrefix.find(s) ?: break
+            val next = s.substring(matched.range.last + 1).trim()
+            if (next.isBlank() || next.length == s.length) break
+            s = next
+        }
+        return s
+    }
+
+    /** 首字母（若为小写字母）转大写，其余原样保留。 */
+    private fun capitalizeFirst(text: String): String =
+        text.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+
+    /**
+     * 第二行的镜头参数：22mm F1.7 1/100s ISO12（相机水印常见排版）。
+     * 只输出原图 EXIF 中确实存在的字段，缺失字段直接省略。
+     */
+    fun formatLensLine(info: ExifInfo?): String {
+        if (info == null) return ""
         val parts = mutableListOf<String>()
-        val device = buildDevice(info.make, info.model)
-        if (device.isNotBlank()) parts += device
-        info.fNumber?.let { parts += "f/${formatNum(it)}" }
+        info.focalLength?.let { parts += "${formatNum(it)}mm" }
+        info.fNumber?.let { parts += "F${formatNum(it)}" }
         info.exposureTime?.let { parts += formatExposure(it) }
         info.iso?.let { parts += "ISO$it" }
-        info.focalLength?.let { parts += "${formatNum(it)}mm" }
-        if (showGps && info.hasGps) {
-            info.gpsLat?.let { lat -> info.gpsLon?.let { lon -> parts += formatGps(lat, lon) } }
-        }
-        return parts.joinToString(" · ")
+        return parts.joinToString(" ")
     }
+
+    /** 第二行的拍摄时间：把 EXIF 的 "2026:10:17 16:05:37" 规整为常见日期格式。 */
+    fun formatDateLine(info: ExifInfo?): String {
+        val raw = info?.dateTime?.trim()?.takeIf { it.isNotBlank() } ?: return ""
+        val parts = raw.split(':', limit = 3)
+        // EXIF 常见 "2026:10:17 16:05:37"，只把日期段的分隔符换成横杠，时间保持冒号
+        return if (parts.size == 3) "${parts[0]}-${parts[1]}-${parts[2]}" else raw
+    }
+
+    /** v2.7.0：镜头参数行固定自动（有镜头参数优先，否则拍摄时间）；不再拼 GPS 坐标。 */
+    fun formatAutoSecondLine(info: ExifInfo?): String =
+        formatLensLine(info).ifBlank { formatDateLine(info) }
+
+    /** 文字水印选「时间戳」且照片无 EXIF 时间时，取选中当下的本机时间。 */
+    fun formatNow(): String =
+        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
 
     private fun buildDevice(make: String?, model: String?): String {
         if (model.isNullOrBlank()) return make ?: ""
@@ -111,11 +161,5 @@ object ExifReader {
         // t == 0（B 门 / 部分相机）时 1/t 会得到 Infinity，toInt() 变成 2147483647
         t > 0.0 -> "1/${(1.0 / t).toInt()}s"
         else -> "${t}s"
-    }
-
-    private fun formatGps(lat: Double, lon: Double): String {
-        val ns = if (lat >= 0) "N" else "S"
-        val ew = if (lon >= 0) "E" else "W"
-        return String.format("%.3f°%s %.3f°%s", kotlin.math.abs(lat), ns, kotlin.math.abs(lon), ew)
     }
 }

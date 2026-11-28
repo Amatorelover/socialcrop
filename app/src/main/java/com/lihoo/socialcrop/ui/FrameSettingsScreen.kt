@@ -2,12 +2,11 @@ package com.lihoo.socialcrop.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -40,6 +38,7 @@ import com.lihoo.socialcrop.data.FramePalettes
 import com.lihoo.socialcrop.data.FrameSpec
 import com.lihoo.socialcrop.data.FrameStyle
 import com.lihoo.socialcrop.data.StrokeColor
+import com.lihoo.socialcrop.ui.components.ColorPickerDialog
 import com.lihoo.socialcrop.ui.components.FramePreview
 import com.lihoo.socialcrop.ui.materialyou.M3
 import com.lihoo.socialcrop.ui.materialyou.M3BottomBar
@@ -55,7 +54,6 @@ import com.lihoo.socialcrop.ui.materialyou.M3Slider
 import com.lihoo.socialcrop.ui.materialyou.M3Switch
 import com.lihoo.socialcrop.ui.materialyou.M3TextButton
 import com.lihoo.socialcrop.ui.materialyou.M3TextField
-import com.lihoo.socialcrop.ui.materialyou.m3Tap
 import com.lihoo.socialcrop.viewmodel.EditorViewModel
 import com.lihoo.socialcrop.viewmodel.EditorViewModel.WatermarkTarget
 
@@ -69,13 +67,11 @@ fun FrameSettingsScreen(nav: NavController, vm: EditorViewModel) {
     val frame = vm.frameSpec
     val src = vm.bitmap
     val p = M3.palette
-    var hexText by remember(frame.style, frame.customColor) {
-        mutableStateOf(hexOf(frame.customColor))
-    }
+    var showColorPicker by remember { mutableStateOf(false) }
     val modeName = stringResource(styleLabelRes(frame.style))
 
     fun doReset() {
-        hexText = hexOf(FrameSpec().customColor)
+        showColorPicker = false
         vm.resetFrame()
     }
 
@@ -103,65 +99,83 @@ fun FrameSettingsScreen(nav: NavController, vm: EditorViewModel) {
             }
         }
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding)) {
-            // ===== 常驻实时预览 =====
-            if (src != null) {
-                M3Card(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
-                ) {
-                    Box(Modifier.padding(10.dp)) {
-                        FramePreview(
-                            src = src,
-                            spec = frame,
-                            targetRatio = vm.ratioValue,
-                            watermark = vm.getWatermark(WatermarkTarget.Frame(frame.style)),
-                            // 预览按所选比例成型，不铺黑幕、不留空白边
-                            modifier = Modifier.fillMaxWidth()
-                                .aspectRatio(vm.ratioValue.coerceIn(0.25f, 4f))
-                        )
+        BoxWithConstraints(Modifier.fillMaxSize().padding(padding)) {
+            // 竖屏时预览限高、按比例居中，把更多空间让给下方滚动设置区
+            val previewH = (maxHeight * 0.28f).coerceIn(130.dp, 200.dp)
+            Column(Modifier.fillMaxSize()) {
+                // ===== 常驻实时预览 =====
+                if (src != null) {
+                    M3Card(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        Box(
+                            Modifier.fillMaxWidth().padding(8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            FramePreview(
+                                src = src,
+                                spec = frame,
+                                targetRatio = vm.ratioValue,
+                                watermark = vm.getWatermark(WatermarkTarget.Frame(frame.style)),
+                                exif = vm.exifInfo,
+                                // 预览按所选比例成型、限高居中，不铺黑幕、不留空白边
+                                modifier = Modifier
+                                    .height(previewH)
+                                    .aspectRatio(vm.ratioValue.coerceIn(0.25f, 4f))
+                            )
+                        }
                     }
-                }
-                Text(
-                    stringResource(
-                        R.string.settings_preview_line,
-                        vm.ratioPixelLabel,
-                        stringResource(R.string.label_lossless),
-                        stringResource(presetNameRes(frame.presetName))
-                    ),
-                    fontSize = 13.sp,
-                    color = p.secondaryLabel,
-                    lineHeight = 17.sp,
-                    modifier = Modifier.padding(horizontal = 32.dp, vertical = 4.dp)
-                )
-            }
-
-            Column(
-                Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-                    .padding(bottom = 24.dp)
-            ) {
-                if (frame.style == FrameStyle.CINEMA) {
-                    // 电影边框走独立渲染分支，通用版面参数对它一律无效
-                    CinemaSection(frame, vm)
-                } else {
-                    PaddingSection(frame, vm)
-                    ImageSection(frame, vm)
-                    ShapeSection(frame, vm)
-                    ShadowSection(frame, vm)
-                    StyleSpecificSection(
-                        frame = frame,
-                        vm = vm,
-                        hexText = hexText,
-                        onHexTextChange = { hexText = it },
-                        onColorPicked = { hexText = hexOf(it) }
+                    Text(
+                        stringResource(
+                            R.string.settings_preview_line,
+                            vm.ratioPixelLabel,
+                            stringResource(R.string.label_lossless),
+                            stringResource(presetNameRes(frame.presetName))
+                        ),
+                        fontSize = 13.sp,
+                        color = p.secondaryLabel,
+                        lineHeight = 17.sp,
+                        modifier = Modifier.padding(horizontal = 32.dp, vertical = 4.dp)
                     )
                 }
-                Spacer(Modifier.height(8.dp))
+
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(bottom = 24.dp)
+                ) {
+                    if (frame.style == FrameStyle.CINEMA) {
+                        // 电影边框走独立渲染分支，通用版面参数对它一律无效
+                        CinemaSection(frame, vm)
+                    } else {
+                        PaddingSection(frame, vm)
+                        ImageSection(frame, vm)
+                        ShapeSection(frame, vm)
+                        ShadowSection(frame, vm)
+                        StyleSpecificSection(
+                            frame = frame,
+                            vm = vm,
+                            onCustomColor = { showColorPicker = true }
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
+                }
             }
         }
+    }
+
+    if (showColorPicker) {
+        ColorPickerDialog(
+            initialColor = frame.customColor,
+            onDismiss = { showColorPicker = false },
+            onConfirm = { color ->
+                vm.tweak { s -> s.copy(customColor = color) }
+                showColorPicker = false
+            }
+        )
     }
 }
 
@@ -271,11 +285,13 @@ private fun ShadowSection(frame: FrameSpec, vm: EditorViewModel) {
             onChange = { vm.tweak { s -> s.copy(shadow = it) } }
         )
         if (frame.shadow) {
+            // 上限 1.2：渲染器里 strength 会被钳到 1（全黑投影），
+            // 旧范围给到 2 导致 60% 之后拉动完全没变化
             ParamSlider(
                 label = stringResource(R.string.label_shadow_strength),
-                value = frame.shadowStrength,
-                range = 0f..2f,
-                display = "×${round1(frame.shadowStrength)}",
+                value = frame.shadowStrength.coerceAtMost(1.2f),
+                range = 0f..1.2f,
+                display = "×${round1(frame.shadowStrength.coerceAtMost(1.2f))}",
                 onValueChange = { vm.tweak { s -> s.copy(shadowStrength = it) } }
             )
             ParamSlider(
@@ -294,9 +310,7 @@ private fun ShadowSection(frame: FrameSpec, vm: EditorViewModel) {
 private fun StyleSpecificSection(
     frame: FrameSpec,
     vm: EditorViewModel,
-    hexText: String,
-    onHexTextChange: (String) -> Unit,
-    onColorPicked: (Int) -> Unit
+    onCustomColor: () -> Unit
 ) {
     Section(stringResource(styleSectionRes(frame.style))) {
         when (frame.style) {
@@ -344,6 +358,16 @@ private fun StyleSpecificSection(
                         stringResource(R.string.palette_count_display, frame.paletteCount),
                         steps = 7
                     ) { vm.tweak { s -> s.copy(paletteCount = it.toInt()) } }
+                    ParamSlider(
+                        stringResource(R.string.label_palette_dot_size),
+                        frame.paletteDotRatio, 0.06f..1.8f,
+                        "${(frame.paletteDotRatio / 0.20f * 100).toInt()}%"
+                    ) { vm.tweak { s -> s.copy(paletteDotRatio = it) } }
+                    ParamSlider(
+                        stringResource(R.string.label_palette_dot_offset),
+                        frame.paletteDotOffsetY, -0.06f..0.06f,
+                        "${(frame.paletteDotOffsetY * 100).toInt()}%"
+                    ) { vm.tweak { s -> s.copy(paletteDotOffsetY = it) } }
                 }
                 Caption(stringResource(R.string.label_gradient_start))
                 ColorDots(
@@ -372,20 +396,23 @@ private fun StyleSpecificSection(
                 Caption(stringResource(R.string.label_bg_palette))
                 ColorDots(
                     colors = FramePalettes.CUSTOM_COLORS,
-                    selected = frame.customColor,
-                    onSelect = {
-                        onColorPicked(it)
-                        vm.tweak { s -> s.copy(customColor = it) }
-                    }
+                    selected = frame.customColor.takeIf { it in FramePalettes.CUSTOM_COLORS },
+                    onSelect = { vm.tweak { s -> s.copy(customColor = it) } }
                 )
-                Caption(stringResource(R.string.label_custom_hex))
-                M3TextField(
-                    value = hexText,
-                    onValueChange = { text ->
-                        onHexTextChange(text)
-                        parseHex(text)?.let { c -> vm.tweak { s -> s.copy(customColor = c) } }
-                    },
-                    placeholder = "RRGGBB"
+                // 最后一项走系统式色盘：选中色以圆点回显，不再让用户输入 HEX
+                M3Row(
+                    title = stringResource(R.string.label_custom_color),
+                    onClick = onCustomColor,
+                    divider = false,
+                    trailing = {
+                        Box(
+                            Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                                .background(Color(frame.customColor))
+                                .border(1.dp, M3.palette.separator, CircleShape)
+                        )
+                    }
                 )
             }
             // CINEMA 走独立参数页，不会进入本分支；仅满足 when 表达式穷尽
@@ -398,7 +425,9 @@ private fun StyleSpecificSection(
 private fun CinemaSection(frame: FrameSpec, vm: EditorViewModel) {
     Section(stringResource(R.string.section_cinema_params)) {
         Caption(stringResource(R.string.label_cinema_theme))
-        CinemaThemeDots(
+        // 与其余模式一样用按钮式分段控件，不再用圆形渐变色点
+        ChipGroupRes(
+            items = CinemaTheme.entries.map { it to cinemaThemeLabelRes(it) },
             selected = frame.cinemaTheme,
             onSelect = { vm.tweak { s -> s.copy(cinemaTheme = it) } }
         )
@@ -448,52 +477,6 @@ private fun CinemaSection(frame: FrameSpec, vm: EditorViewModel) {
             onSelect = { vm.tweak { s -> s.copy(subtitleAlign = it) } }
         )
         Footnote(stringResource(R.string.cinema_hint))
-    }
-}
-
-/** 三个主题圆点：纯黑 / 纯白 / 柔和渐隐，选中项带蓝色描边环 */
-@Composable
-private fun CinemaThemeDots(selected: CinemaTheme, onSelect: (CinemaTheme) -> Unit) {
-    val p = M3.palette
-    Row(
-        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        CinemaTheme.entries.forEach { theme ->
-            val active = selected == theme
-            Column(
-                Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(
-                    Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(
-                            when (theme) {
-                                CinemaTheme.BLACK -> Brush.linearGradient(listOf(Color(0xFF101012), Color(0xFF000000)))
-                                CinemaTheme.WHITE -> Brush.linearGradient(listOf(Color.White, Color(0xFFF0EEEA)))
-                                CinemaTheme.FADE -> Brush.linearGradient(
-                                    listOf(Color(0xFF38BDF8), Color(0xFF8B5CF6), Color(0xFFEC4899))
-                                )
-                            }
-                        )
-                        .border(
-                            width = if (active) 2.dp else 0.5.dp,
-                            color = if (active) p.blue else p.separator,
-                            shape = CircleShape
-                        )
-                        .m3Tap { onSelect(theme) }
-                )
-                Spacer(Modifier.height(5.dp))
-                Text(
-                    stringResource(cinemaThemeLabelRes(theme)),
-                    fontSize = 12.sp,
-                    color = if (active) p.blue else p.secondaryLabel
-                )
-            }
-        }
     }
 }
 
@@ -603,14 +586,3 @@ private fun ColorDots(
 }
 
 private fun round1(v: Float): String = "%.1f".format(v)
-
-private fun hexOf(argb: Int): String = "%02X%02X%02X".format(
-    (argb shr 16) and 0xFF, (argb shr 8) and 0xFF, argb and 0xFF
-)
-
-private fun parseHex(text: String): Int? {
-    val s = text.trim().removePrefix("#")
-    if (s.length != 6) return null
-    val rgb = s.toLongOrNull(16) ?: return null
-    return (0xFF000000L or rgb).toInt()
-}

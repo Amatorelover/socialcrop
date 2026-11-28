@@ -5,6 +5,8 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import com.lihoo.socialcrop.data.WatermarkSpec
+import com.lihoo.socialcrop.util.ExifInfo
+import com.lihoo.socialcrop.util.recycleDerived
 import kotlin.math.roundToInt
 
 /**
@@ -40,7 +42,9 @@ object ImageProcessor {
         val canvas = Canvas(out)
         val paint = Paint(Paint.FILTER_BITMAP_FLAG or Paint.DITHER_FLAG)
         canvas.drawBitmap(region, null, RectF(0f, 0f, dstW.toFloat(), dstH.toFloat()), paint)
-        region.recycle()
+        // 裁切矩形覆盖整幅图时 createBitmap 会直接返回 src 本身；
+        // 若照常 recycle 就会销毁 ViewModel 的源图，使后续预览/导出全部失效甚至崩溃。
+        recycleDerived(region, src)
         return out
     }
 
@@ -94,7 +98,8 @@ object ImageProcessor {
         cols: Int,
         rows: Int,
         watermark: WatermarkSpec? = null,
-        logo: Bitmap? = null
+        logo: Bitmap? = null,
+        exif: ExifInfo? = null
     ): List<Bitmap> {
         val plan = planGrid(src.width, src.height, cols, rows)
         val result = ArrayList<Bitmap>(plan.count)
@@ -103,12 +108,15 @@ object ImageProcessor {
                 val x = plan.cropLeft + c * plan.cellW
                 val y = plan.cropTop + r * plan.cellH
                 val raw = Bitmap.createBitmap(src, x, y, plan.cellW, plan.cellH)
+                // 1×1 切格时 raw 会与 src 引用同一对象；只在确有需要且不是 src 时才回收
                 if (watermark != null && watermark.enabled) {
                     val out = Bitmap.createBitmap(plan.cellW, plan.cellH, Bitmap.Config.ARGB_8888)
                     val cv = Canvas(out)
                     cv.drawBitmap(raw, 0f, 0f, null)
-                    WatermarkRenderer.draw(cv, watermark, plan.cellW, plan.cellH, logo)
-                    raw.recycle()
+                    WatermarkRenderer.drawOnPlainImage(
+                        cv, watermark, plan.cellW, plan.cellH, logo, exif
+                    )
+                    recycleDerived(raw, src)
                     result.add(out)
                 } else {
                     result.add(raw)

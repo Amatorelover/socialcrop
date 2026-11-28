@@ -18,6 +18,8 @@ import com.lihoo.socialcrop.data.FrameSpec
 import com.lihoo.socialcrop.data.FrameStyle
 import com.lihoo.socialcrop.data.WatermarkSpec
 import com.lihoo.socialcrop.data.WatermarkBands
+import com.lihoo.socialcrop.util.ExifInfo
+import com.lihoo.socialcrop.util.recycleDerived
 import com.lihoo.socialcrop.data.StrokeColor
 import kotlin.math.abs
 import kotlin.math.cos
@@ -46,7 +48,8 @@ object FrameRenderer {
         targetRatio: Float,
         outWidth: Int = spec.outWidth,
         watermark: WatermarkSpec? = null,
-        logo: Bitmap? = null
+        logo: Bitmap? = null,
+        exif: ExifInfo? = null
     ): Bitmap {
         val ratio = targetRatio.coerceIn(0.05f, 20f)
         val reqW = if (outWidth <= 0) losslessWidth(src, ratio) else outWidth.coerceAtLeast(64)
@@ -70,7 +73,8 @@ object FrameRenderer {
             // 下遮罩条留给字幕，居中水印改放上遮罩条，其余仍在上下带内
             drawWatermark(
                 canvas, watermark, w, h, logo,
-                WatermarkBands(topBand, bottomBand, center = topBand)
+                WatermarkBands(topBand, bottomBand, center = topBand),
+                exif
             )
             return out
         }
@@ -84,10 +88,21 @@ object FrameRenderer {
 
         val paletteVisible = spec.style == FrameStyle.GRADIENT &&
             spec.showPalette && spec.paletteCount > 0
-        val needBottom = spec.bottomBar || paletteVisible
-        val bottomReserve = if (needBottom) {
-            minSide * spec.bottomBarRatio.coerceIn(0f, 0.35f)
+        val palCount = spec.paletteCount.coerceIn(1, 8)
+        // 色圈半径相对「基准带高」（短边 × bottomBarRatio），与最终带高解耦，避免带越高圆越大的正反馈。
+        val palMetrics = if (paletteVisible) paletteMetrics(spec, w.toFloat(), minSide, palCount) else null
+        val palOffsetPx = if (paletteVisible) {
+            spec.paletteDotOffsetY.coerceIn(-0.06f, 0.06f) * minSide
         } else 0f
+        val needBottom = spec.bottomBar || paletteVisible
+        val baseBottom = if (needBottom) minSide * spec.bottomBarRatio.coerceIn(0f, 0.35f) else 0f
+        // 色带随色圈整块高度与偏移自动增高，放大色圈也不会溢出；上限保护避免吃掉整个画面。
+        val bottomReserve = if (palMetrics != null) {
+            min(
+                max(baseBottom, palMetrics.blockH + 2f * abs(palOffsetPx) + minSide * 0.02f),
+                minSide * 0.45f
+            )
+        } else baseBottom
 
         val availW = (w - padL - padR).coerceAtLeast(minSide * 0.15f)
         val availH = (h - padT - padB - bottomReserve).coerceAtLeast(minSide * 0.15f)
@@ -123,14 +138,16 @@ object FrameRenderer {
             drawStroke(canvas, content, radius, minSide, spec)
         }
 
-        if (paletteVisible) {
+        if (palMetrics != null) {
             drawPalette(
                 canvas,
-                dominantColors(src, spec.paletteCount.coerceIn(1, 8)),
+                dominantColors(src, palCount),
                 w.toFloat(),
                 h - bottomReserve,
                 bottomReserve,
-                spec
+                spec,
+                palMetrics,
+                palOffsetPx
             )
         }
         // 水印只落在照片矩形之外的上下留白带，CENTER 用下带正中的签名位
@@ -138,7 +155,8 @@ object FrameRenderer {
         val bottomBand = RectF(0f, content.bottom, w.toFloat(), h.toFloat())
         drawWatermark(
             canvas, watermark, w, h, logo,
-            WatermarkBands(topBand, bottomBand, center = bottomBand)
+            WatermarkBands(topBand, bottomBand, center = bottomBand),
+            exif
         )
         return out
     }
@@ -150,10 +168,64 @@ object FrameRenderer {
         w: Int,
         h: Int,
         logo: Bitmap?,
-        bands: WatermarkBands
+        bands: WatermarkBands,
+        exif: ExifInfo? = null
     ) {
         if (watermark == null) return
-        WatermarkRenderer.draw(canvas, watermark, w, h, logo, bands)
+        WatermarkRenderer.draw(canvas, watermark, w, h, logo, bands, exif)
+    }
+
+    /**
+     * 水印可落留白带的高度 / 画布短边。设置页据此把「大小」滑块上限压到实际可用范围：
+     * 旧版滑块固定 0.02–0.6，而渲染器按带高把字号钳在约 0.10，导致 15% 之后拉动无变化。
+     * 这里只算比例、不分配位图，预览与导出仍由 [render] 里的真实带高决定最终字号。
+     */
+    fun watermarkBandRatio(spec: FrameSpec, targetRatio: Float, srcW: Int, srcH: Int): Float {
+        val ratio = targetRatio.coerceIn(0.05f, 20f)
+        // 用归一画布算比例：w=10000，h=10000/ratio
+        val w = 10000f
+        val h = 10000f / ratio
+        val minSide = min(w, h)
+
+        if (spec.style == FrameStyle.CINEMA) {
+            // 电影边框水印放上遮罩条
+            val barH = h * spec.cinemaBarRatio.coerceIn(0f, 0.30f)
+            return (barH / minSide).coerceIn(0f, 2f)
+        }
+
+        val pads = spec.effectivePads
+        val padL = (minSide * pads[0].coerceIn(0f, 0.32f)).coerceAtMost(minSide * 0.4f)
+        val padT = (minSide * pads[1].coerceIn(0f, 0.32f)).coerceAtMost(minSide * 0.4f)
+        val padR = (minSide * pads[2].coerceIn(0f, 0.32f)).coerceAtMost(minSide * 0.4f)
+        val padB = (minSide * pads[3].coerceIn(0f, 0.32f)).coerceAtMost(minSide * 0.4f)
+        val paletteVisible = spec.style == FrameStyle.GRADIENT &&
+            spec.showPalette && spec.paletteCount > 0
+        val baseBottom = if (spec.bottomBar || paletteVisible) {
+            minSide * spec.bottomBarRatio.coerceIn(0f, 0.35f)
+        } else 0f
+        val bottomReserve = if (paletteVisible) {
+            val pm = paletteMetrics(
+                spec, w, minSide, spec.paletteCount.coerceIn(1, 8)
+            )
+            val off = spec.paletteDotOffsetY.coerceIn(-0.06f, 0.06f) * minSide
+            min(max(baseBottom, pm.blockH + 2f * abs(off) + minSide * 0.02f), minSide * 0.45f)
+        } else baseBottom
+
+        val availW = (w - padL - padR).coerceAtLeast(minSide * 0.15f)
+        val availH = (h - padT - padB - bottomReserve).coerceAtLeast(minSide * 0.15f)
+        val contentBottom = if (spec.fit == FrameFit.CONTAIN) {
+            val maxScale = min(
+                availW / srcW.coerceAtLeast(1).toFloat(),
+                availH / srcH.coerceAtLeast(1).toFloat()
+            )
+            val scale = (maxScale * spec.contentScale.coerceIn(0.3f, 2f)).coerceAtMost(maxScale)
+            val ch = srcH.coerceAtLeast(1) * scale
+            val freeH = availH - ch
+            padT + freeH / 2f + freeH / 2f * spec.verticalBias.coerceIn(-1f, 1f) + ch
+        } else {
+            padT + availH
+        }
+        return ((h - contentBottom) / minSide).coerceIn(0f, 2f)
     }
 
     /**
@@ -242,7 +314,7 @@ object FrameRenderer {
             RectF((w - dw) / 2f, (h - dh) / 2f, (w + dw) / 2f, (h + dh) / 2f)
         )
         soft.recycle()
-        tiny.recycle()
+        recycleDerived(tiny, src)
 
         // 3) 一层均匀的极轻压暗，让清晰前景从模糊底里「浮」出来。
         //    不做渐变/方向/暗角——那会把背景变成人工光影，丢失「两层图片」的忠实观感。
@@ -389,7 +461,8 @@ object FrameRenderer {
         spec: FrameSpec
     ) {
         val spread = spec.shadowSpread.coerceIn(0.2f, 3f)
-        val strength = (spec.shadowStrength.coerceIn(0f, 2f) * 0.85f).coerceIn(0f, 1f)
+        // 滑块上限 1.2 对应满浓度；旧版范围 0–2 但这里 1.18 就饱和，后半段拉动无变化
+        val strength = (spec.shadowStrength.coerceIn(0f, 1.2f) / 1.2f).coerceIn(0f, 1f)
         if (strength <= 0f) return
 
         val blurPx = (minSide * 0.074f * spread).roundToInt().coerceIn(2, 240)
@@ -600,7 +673,7 @@ object FrameRenderer {
         drawCover(canvas, blurred, RectF(0f, h - barH, w.toFloat(), h.toFloat()), paint)
         // 两张临时位图用完即回收，否则每次 FADE 渲染都会泄漏一份柔焦底
         blurred.recycle()
-        small.recycle()
+        recycleDerived(small, src)
     }
 
     /** 字幕两行紧贴居中：主行略大、副行约 0.78 倍，位置落在下方遮罩内 */
@@ -677,22 +750,45 @@ object FrameRenderer {
 
     // ================= 色卡 =================
 
+    private data class PaletteMetrics(
+        val dotR: Float, val textSize: Float, val textGap: Float, val blockH: Float
+    )
+
+    /** 色圈整块尺寸：半径相对「基准带高」(短边 × bottomBarRatio)，与最终带高解耦；
+     *  hex 文字随半径等比缩放；水平间距钳制保证圆不重叠。 */
+    private fun paletteMetrics(
+        spec: FrameSpec, w: Float, minSide: Float, count: Int
+    ): PaletteMetrics {
+        val gap = w / (count + 1)
+        val baseBand = minSide * spec.bottomBarRatio.coerceIn(0f, 0.35f)
+        val dotR = min(
+            baseBand * spec.paletteDotRatio.coerceIn(0.06f, 1.8f),
+            gap * 0.42f
+        ).coerceAtLeast(2f)
+        val textSize = max(7f, dotR * 0.72f)
+        val textGap = textSize * 0.35f
+        return PaletteMetrics(dotR, textSize, textGap, dotR * 2f + textGap + textSize)
+    }
+
     private fun drawPalette(
         canvas: Canvas,
         colors: List<Int>,
         w: Float,
         top: Float,
         reserveH: Float,
-        spec: FrameSpec
+        spec: FrameSpec,
+        metrics: PaletteMetrics,
+        offsetPx: Float
     ) {
         if (colors.isEmpty() || reserveH <= 0f) return
         val n = colors.size
-        val dotR = min(reserveH * 0.20f, w * 0.028f)
         val gap = w / (n + 1)
-        val cy = top + reserveH * 0.38f
+        val (dotR, textSize, textGap, blockH) = metrics
+        // 整块在带内垂直居中后再叠加用户上下偏移；bottomReserve 已为偏移预留空间。
+        val cy = top + (reserveH - blockH).coerceAtLeast(0f) / 2f + dotR + offsetPx
         val dotPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-            textSize = max(8f, dotR * 0.72f)
+            this.textSize = textSize
             textAlign = Paint.Align.CENTER
             color = if (spec.isLightBackground) Color.rgb(90, 90, 90) else Color.rgb(220, 220, 220)
         }
@@ -703,7 +799,7 @@ object FrameRenderer {
             val hex = "#%02x%02x%02x".format(
                 Color.red(colors[i]), Color.green(colors[i]), Color.blue(colors[i])
             )
-            canvas.drawText(hex, cx, cy + dotR + textPaint.textSize * 1.4f, textPaint)
+            canvas.drawText(hex, cx, cy + dotR + textGap + textSize * 0.85f, textPaint)
         }
     }
 
@@ -717,7 +813,7 @@ object FrameRenderer {
         val small = Bitmap.createScaledBitmap(src, n, n, true)
         val px = IntArray(n * n)
         small.getPixels(px, 0, n, 0, 0, n, n)
-        small.recycle()
+        recycleDerived(small, src)
 
         val pts = Array(px.size) { i ->
             val c = px[i]

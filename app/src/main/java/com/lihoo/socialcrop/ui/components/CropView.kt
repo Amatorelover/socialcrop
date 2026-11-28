@@ -1,7 +1,9 @@
 package com.lihoo.socialcrop.ui.components
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.RectF
+import android.view.Choreographer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +28,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
@@ -34,8 +38,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.lihoo.socialcrop.data.WatermarkSpec
 import com.lihoo.socialcrop.domain.ImageProcessor
+import com.lihoo.socialcrop.domain.WatermarkRenderer
+import com.lihoo.socialcrop.util.ExifInfo
+import com.lihoo.socialcrop.util.decodeLogo
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 /** 降采样成极小图；绘制时双线性放大即得到柔和模糊，仅用于弱化「被裁掉区域」。 */
 private fun makeBlurThumbnail(src: Bitmap): Bitmap {
@@ -70,7 +79,10 @@ fun CropView(
     centerY: Float = 0.5f,
     onCenterChange: (Float, Float) -> Unit = { _, _ -> },
     cropTrigger: Int,
-    onCropped: (Bitmap) -> Unit
+    onCropped: (Bitmap) -> Unit,
+    /** 关闭边框时的全局水印：画在取景框内的图片底部，和导出结果一致 */
+    watermark: WatermarkSpec? = null,
+    exif: ExifInfo? = null
 ) {
     // 与 FrameRenderer 保持同一区间，极端比例下 1080/safeTarget 才不会算出 10 万像素的高度
     val safeTarget = targetRatio.coerceIn(0.05f, 20f)
@@ -89,6 +101,36 @@ fun CropView(
 
     val clearImage = remember(bitmap) { bitmap.asImageBitmap() }
     val blurImage = remember(bitmap) { makeBlurThumbnail(bitmap).asImageBitmap() }
+
+    // 取景框内的成品预览要带水印：用与导出相同的 WatermarkRenderer 画一张透明小图，
+    // 再按取景框缩放绘制，保证「关闭边框也能在编辑页看到底部水印」。
+    val wmOverlay = remember(bitmap, watermark, exif, cropW, cropH) {
+        val wm = watermark
+        if (wm == null || !wm.enabled) null else runCatching {
+            // 极端比例（如 1:20）时按 720 宽会算出上万像素高，一次分配几十 MB 直接 OOM；
+            // 最长边钳到 2048，覆盖层只是缩放绘制，分辨率足够且不会拖垮预览。
+            val rawW = 720f
+            val rawH = rawW * cropH / cropW.coerceAtLeast(1f)
+            val cap = if (maxOf(rawW, rawH) > 2048f) 2048f / maxOf(rawW, rawH) else 1f
+            val ow = (rawW * cap).roundToInt().coerceAtLeast(1)
+            val oh = (rawH * cap).roundToInt().coerceAtLeast(1)
+            val bmp = Bitmap.createBitmap(ow, oh, Bitmap.Config.ARGB_8888)
+            val logo = if (wm.logoPath.isNotBlank()) decodeLogo(wm.logoPath, tint = wm.logoTint) else null
+            WatermarkRenderer.drawOnPlainImage(Canvas(bmp), wm, ow, oh, logo, exif)
+            logo?.recycle()
+            bmp.asImageBitmap()
+        }.getOrNull()
+    }
+    // remember 的旧 ImageBitmap 被替换时不会自动释放底层位图；延后两帧回收，避免仍在绘制时 recycle
+    DisposableEffect(wmOverlay) {
+        onDispose {
+            val bmp = wmOverlay?.asAndroidBitmap()
+            if (bmp != null && !bmp.isRecycled) {
+                val ch = Choreographer.getInstance()
+                ch.postFrameCallback { ch.postFrameCallback { if (!bmp.isRecycled) bmp.recycle() } }
+            }
+        }
+    }
 
     // pointerInput 的 key 不含 center，需用 updated state 读取最新值，否则拖动只会基于首次组合的位置累加
     val latestCenter by rememberUpdatedState(cx to cy)
@@ -144,7 +186,9 @@ fun CropView(
             drawRect(shade, Offset(0f, bottom), Size(size.width, (size.height - bottom).coerceAtLeast(0f)))
             drawRect(shade, Offset.Zero, Size(left.coerceAtLeast(0f), size.height))
             drawRect(shade, Offset(right, 0f), Size((size.width - right).coerceAtLeast(0f), size.height))
-            // ③ 亮框内还原清晰原图，不做任何覆盖
+            val frameW = right - left
+            val frameH = bottom - top
+            // ③ 亮框内还原清晰原图，并叠上与导出一致的底部水印
             clipRect(left, top, right, bottom) {
                 drawImage(
                     clearImage,
@@ -152,10 +196,19 @@ fun CropView(
                     dstSize = dstSize,
                     filterQuality = FilterQuality.High
                 )
+                wmOverlay?.let { overlay ->
+                    drawImage(
+                        overlay,
+                        dstOffset = IntOffset(left.toInt(), top.toInt()),
+                        dstSize = IntSize(
+                            frameW.toInt().coerceAtLeast(1),
+                            frameH.toInt().coerceAtLeast(1)
+                        ),
+                        filterQuality = FilterQuality.High
+                    )
+                }
             }
             // ④ 取景框描边（Stroke，不能实心填充）
-            val frameW = right - left
-            val frameH = bottom - top
             drawRect(
                 color = Color.White.copy(alpha = 0.9f),
                 topLeft = Offset(left, top),
